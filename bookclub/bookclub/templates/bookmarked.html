@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Challenge</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+    <link rel="icon" type="image/png" href="/static/images/bookclub-logo.jpg" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+      rel="stylesheet"
+    />
+  </head>
+
+  <body>
+    <div class="logged-in-container">
+      <header>
+        <div class="logo-container">
+          <li><a href="/"><img src="/static/images/bookclub-logo.jpg" alt="Logo" class="logo"></a></li>
+        </div>
+        <div class="burger-menu" onclick="toggleMenu()">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+        <nav id="nav-menu">
+          <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/my_challenge">My Challenge</a></li>
+            <li><a href="/previous_challenges">Alle Challenges</a></li>
+            <li><a href="/recommendations"><i class="fas fa-magic"></i> AI Buchempfehlungen</a></li>
+            <li><a href="/profile">Profile</a></li>
+            <li><a href="/logout">Logout</a></li>
+          </ul>
+        </nav>
+      </header>
+      <main>
+        <div class="bookmarks-section">
+          <h2>Bookmarked</h2></br>
+          <div id="myBookmarks"></div>
+        </div>
+      </main>
+    </div>
+    <script>
+      // const userId = "{{ user_id }}";
+      // localStorage.setItem("userId", userId);
+    </script>
+    <script src="/static/js/test.js"></script>
+    <script src="/static/js/bookmarks,js"></script>
+  </body>
+</html>

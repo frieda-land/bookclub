@@ -1,0 +1,7 @@
+.venv
+.env
+.vscode/*
+sql_app.db
+__pycache__
+poetry.lock
+bookclub/bookclub/static/images/Friederike Land.jpg

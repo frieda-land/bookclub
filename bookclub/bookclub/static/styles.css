@@ -1,0 +1,605 @@
+/* Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Libre Baskerville";
+}
+
+body {
+  font-family: "Libre Baskerville";
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+  background-color: #fff4ea;
+}
+
+.login-body {
+  background-color: white;
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.login-body img {
+  max-width: 90%;
+  height: auto;
+  margin-bottom: 20px;
+}
+
+.login-body-content {
+  background-color: white;
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Common Button Style */
+button {
+  background-color: #7eacb5;
+  color: white;
+  padding: 0.7rem;
+  border: none;
+  border-radius: 4px;
+  width: 100%;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #fadfa1;
+  color: black;
+}
+
+/* Login Page Styling */
+.login-container {
+  background-color: white;
+  border-radius: 20px;
+  padding: 2rem;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  width: 300px;
+  text-align: center;
+}
+
+.login-container h2 {
+  margin-bottom: 1.5rem;
+  color: #333;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+  text-align: left;
+}
+
+.form-group label {
+  font-size: 14px;
+  color: #555;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+.form-group select {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+.signup-text {
+  margin: 1rem;
+}
+
+/* Error Message */
+.error-message {
+  color: red;
+  font-size: 14px;
+  margin-top: 1rem;
+}
+
+/* Successfully Logged In Page Styling */
+.logged-in-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: top;
+  align-items: center;
+}
+
+header {
+  width: 100%;
+  padding: 1rem;
+  background-color: #7eacb5;
+  color: white;
+  text-align: center;
+  position: relative;
+}
+
+.burger-menu {
+  position: absolute;
+  top: 1rem;
+  right: 1.5rem;
+  cursor: pointer;
+}
+
+.burger-menu span {
+  display: block;
+  width: 25px;
+  height: 4px;
+  background-color: white;
+  margin: 4px 0;
+}
+
+/* Navigation Menu Styling */
+nav {
+  display: none;
+  position: absolute;
+  top: 50px;
+  right: 10px;
+  background-color: #7eacb5;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+nav.active {
+  display: block;
+}
+
+nav ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+nav ul li {
+  margin: 0.5rem 0;
+}
+
+nav ul li a {
+  text-decoration: none;
+  color: white;
+  font-size: 18px;
+  padding: 0.5rem 1rem;
+  display: block;
+}
+
+nav ul li a:hover {
+  background-color: #7eacb5;
+}
+
+main {
+  margin-top: 2rem;
+  text-align: center;
+  font-size: 18px;
+  color: #333;
+}
+
+main h1 {
+  margin-bottom: 20px; /* Space below the heading */
+}
+
+main p {
+  margin-bottom: 30px; /* Space below the paragraph */
+}
+
+.google-login-btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 10px 20px;
+  background-color: #7eacb5;
+  color: white;
+  text-decoration: none;
+  border-radius: 5px;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+  margin-right: 8px;
+  font-size: 17px;
+}
+
+.google-login-btn:hover {
+  background-color: #3c2857;
+}
+
+.fab {
+  margin-right: 8px;
+}
+
+.logo-container {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.logo {
+  width: 100px; /* Adjust the width as needed */
+  height: auto;
+}
+.grid-container {
+  display: grid;
+  grid-template-columns: 1fr; /* Single column for vertical stacking */
+  gap: 10px; /* Space between items */
+  padding: 10px;
+  width: 80%; /* Adjust width as needed */
+  margin: 0 auto; /* Center the container */
+}
+
+.grid-item {
+  background-color: #f0f0f0; /* Light gray background */
+  border-radius: 15px; /* Rounded corners */
+  padding: 20px; /* Spacing inside each item */
+  text-align: center; /* Center the text */
+  transition: transform 0.3s; /* Animation for the hover effect */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Add shadow for depth */
+  width: 100%; /* Make items take full width of the container */
+}
+
+.item-content {
+  margin-bottom: 10px; /* Adjust margin between items */
+  padding: 8px; /* Adjust padding inside the container */
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+}
+
+.item-content p {
+  margin: 5px 0; /* Reduce vertical spacing between paragraphs */
+}
+
+.label {
+  font-weight: bold;
+  color: #555;
+}
+
+.label-title {
+  color: #1f456e; /* Darker shade of blue/gray */
+}
+
+.grid-item.hover {
+  transform: scale(1.1); /* Scale up the item on hover */
+}
+
+.delete-icon {
+  display: inline-block; /* Ensures the icon occupies space */
+  font-size: 16px; /* Adjust the size of the icon */
+  cursor: pointer; /* Change cursor to pointer on hover */
+  margin-left: 10px; /* Adds spacing if placed inline */
+  top: 10px; /* Position the icon at the top */
+  right: 10px; /* Position the icon to the right */
+}
+
+.delete-icon:hover {
+  transform: scale(1.3); /* Change color on hover for interactivity */
+}
+
+.submitted-books-section,
+.bookmarks-section {
+  border: 3px solid #7eacb5;
+  border-radius: 15px;
+  padding: 20px;
+  margin: 20px auto;
+  background-color: #fff4ea;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  max-width: 100%;
+  text-align: center;
+}
+
+form.login-form,
+form.signup-form,
+.message-container {
+  border: 2px dashed #7eacb5; /* Dashed border for distinction */
+  border-radius: 15px;
+  padding: 20px;
+  margin: 40px auto; /* Larger margin for separation */
+  background-color: #ffffff; /* White background for contrast */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  max-width: 80%; /* Keep the width consistent */
+}
+
+.error-message-container {
+  border: 1px dashed red; /* Red dashed border for error messages */
+}
+
+.section-divider {
+  border: 0;
+  height: 2px;
+  background: linear-gradient(to right, #7eacb5, #fadfa1); /* Gradient effect */
+  margin: 40px auto; /* Spacing around the divider */
+  max-width: 80%; /* Match the sections' width */
+}
+
+.details {
+  background-color: #e0e0e0; /* Slightly darker background for details */
+  border-radius: 10px; /* Rounded corners */
+  padding: 10px; /* Padding for details */
+  margin-top: 10px; /* Space above the details */
+  transition: max-height 0.3s ease; /* Smooth transition for visibility */
+}
+
+/* Optional: Style for the toggle button */
+.toggle-button {
+  background-color: #7eacb5; /* Background color */
+  color: white; /* Text color */
+  border: none; /* No border */
+  border-radius: 6px; /* Rounded corners */
+  padding: 3px 5px; /* Padding */
+  cursor: pointer; /* Pointer cursor on hover */
+}
+
+.toggle-button:hover {
+  background-color: #fadfa1; /* Change color on hover */
+}
+
+.border-item {
+  border: 3px solid rgba(6, 22, 26, 0.5); /* Add a 3px border with your desired color */
+  padding: 10px; /* Optional: Adjust padding */
+  border-radius: 10px; /* Optional: Add rounded corners */
+}
+
+/* Style for the first three items */
+.grid-item:nth-child(-n + 3) {
+  border: 2px solid rgba(0, 0, 0, 0.2); /* Apply a border */
+  position: relative; /* Ensure pseudo-elements are positioned relative to this container */
+}
+
+/* Adding the icon using a pseudo-element */
+.grid-item:nth-child(-n + 3)::before {
+  content: "\f091"; /* Font Awesome user icon (replace with any other icon if needed) */
+  font-family: "Font Awesome 5 Free"; /* Make sure Font Awesome is loaded */
+  font-weight: 900; /* Font weight for solid icons */
+  position: absolute;
+  top: -10px; /* Adjust as necessary */
+  left: -10px; /* Adjust as necessary */
+  background-color: white; /* Optional: background for the icon */
+  border-radius: 50%;
+  padding: 5px;
+  color: rgba(0, 0, 0, 0.7); /* Adjust color as needed */
+  font-size: 40px; /* Adjust icon size */
+  transform: rotate(-10deg); /* Rotate the icon by 20 degrees */
+}
+
+.profile-pic {
+  width: 250px;
+  height: 250px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.challenge-container {
+  display: flex;
+  flex-direction: row; /* Align boxes horizontally */
+  gap: 20px;
+  margin-top: 20px; /* Add space between the h2 and the boxes */
+  justify-content: flex-end; /* Align boxes to the right */
+}
+
+.challenge-box {
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 40px; /* Double the padding to make the boxes larger */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  background-color: #f9f9f9;
+  flex: 1; /* Allow boxes to grow and fill the container */
+  max-width: 500px; /* Set a maximum width for the boxes */
+  background-size: cover; /* Ensure the background image covers the box */
+  background-position: center; /* Center the background image */
+  color: #333; /* Ensure text is readable on the background image */
+  height: 300px; /* Set a specific height for the boxes */
+  position: relative; /* Position relative for absolute positioning of title */
+}
+
+.title-container {
+  background-color: rgba(61, 60, 60, 0.5); /* Translucent background */
+  color: white;
+  padding: 10px;
+  border-radius: 5px;
+  top: 10px;
+  left: 10px;
+}
+
+.challenge-box h3 {
+  margin-top: 0;
+}
+
+.button-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.button-container button {
+  padding: 10px 20px;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.button-container button:hover {
+  color: #333;
+}
+
+.book-author,
+.book-name,
+.rating {
+  margin: 4px 0; /* Reduce the margin to decrease the space between elements */
+}
+
+.spacer {
+  margin-bottom: 15px; /* Add space after the rating before the next item */
+}
+
+#sub-title {
+  margin-bottom: 20px; /* Add space below the sub-title */
+}
+
+#latestSubmissions {
+  margin-top: 20px; /* Add space above the latest submissions */
+  cursor: pointer; /* Change cursor to pointer to indicate it's clickable */
+  padding: 10px 20px; /* Add padding to the button */
+  background-color: #1f456e; /* Button background color */
+  color: white; /* Button text color */
+  border: none; /* Remove default border */
+  border-radius: 5px; /* Add border radius */
+  font-size: 16px; /* Font size */
+}
+
+#latestSubmissions:hover {
+  background-color: #7eacb5; /* Change background color on hover */
+}
+
+.submissions-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.submission {
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 20px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  background-color: #f9f9f9;
+}
+
+.submission h3 {
+  margin-top: 0;
+}
+
+.submission p {
+  margin: 5px 0;
+}
+
+.rating .fas {
+  color: #fadfa1; /* Gold color for full stars */
+}
+
+.rating .far {
+  color: #ccc; /* Grey color for empty stars */
+}
+
+.output-box {
+  margin-top: 20px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #f9f9f9;
+  max-height: 400px;
+  overflow-y: auto;
+  white-space: pre-wrap; /* Preserve whitespace and line breaks */
+  display: none; /* Hide the box by default */
+}
+
+/* Media Query for Mobile View */
+@media (max-width: 768px) {
+  .challenge-container {
+    flex-direction: column; /* Align boxes vertically */
+    align-items: center; /* Center the boxes */
+  }
+
+  .challenge-box {
+    max-width: 100%; /* Adjust the width for mobile view */
+    height: auto; /* Adjust the height for mobile view */
+  }
+
+  .button-container button {
+    padding: 8px 16px; /* Make the button smaller */
+    font-size: 16px; /* Adjust the font size for mobile view */
+  }
+}
+
+.loading-indicator {
+  font-size: 24px;
+  text-align: center;
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+.book-card {
+  position: relative; /* Ensure the card is the reference for absolute positioning */
+  transition: height 0.3s ease; /* Smooth transition for height change */
+  z-index: 1; /* Ensure the card is above other elements */
+}
+
+.book-card.expanded {
+  height: auto; /* Allow the card to expand when summary is visible */
+  z-index: 2; /* Ensure the expanded card is above other elements */
+}
+
+.book-card:hover {
+  transform: translateY(-5px); /* Lift the card on hover */
+}
+
+.book-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.book-title-author {
+  font-weight: bold;
+  font-size: 16px;
+  color: #333; /* Dark color for title and author */
+  cursor: pointer; /* Indicate that it is clickable */
+  position: relative; /* Ensure the title/author is the reference for absolute positioning */
+  z-index: 3; /* Ensure the title/author is above the summary */
+  text-align: left; /* Align text to the left */
+}
+
+.book-summary {
+  font-size: 14px;
+  color: #555; /* Grey color for summary */
+  max-width: 100%; /* Ensure the summary does not exceed the card's width */
+  overflow-wrap: break-word; /* Break long words */
+  margin-top: 10px;
+  display: none; /* Hide summary by default */
+  text-align: left; /* Align text to the left */
+  position: absolute; /* Position the summary absolutely */
+  background-color: white; /* Background color to match the card */
+  padding: 10px; /* Padding for better readability */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Shadow for better visibility */
+  z-index: 2; /* Ensure the summary is above other elements */
+  width: calc(
+    100% - 30px
+  ); /* Ensure the summary does not exceed the card's width */
+  top: 100%; /* Position below the header */
+  left: 0; /* Align to the left of the card */
+}
+
+.book-summary.visible {
+  display: block; /* Show summary when visible class is added */
+}
+
+.save-icon {
+  cursor: pointer;
+  color: grey; /* Default color */
+  transition: color 0.2s; /* Smooth color transition */
+}
+
+.save-icon.saved {
+  color: red; /* Color when saved */
+}
+
+button.loading::after {
+  content: "...";
+  animation: blink 1s infinite;
+}

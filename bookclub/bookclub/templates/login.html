@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Club Login</title>
+    <link href="{{ url_for('static', path='/styles.css') }}" rel="stylesheet"></head>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  </head>
+    <body class="login-body">
+      <div class="login-body-content">
+        <img src="/static/images/bookclub-logo.jpg" alt="Bookclub Logo">
+        <h2>Login</h2>
+          <p class="error-message" style="display: none;">Invalid login credentials.</p>
+          {% if request.query_params.get('message') == 'expired' %}
+            <p class="error-message">Your session has expired. Please log in again.</p>
+          {% elif request.query_params.get('message') == 'invalid_user' %}
+            <p class="error-message">Invalid username. Please sign up.</p>
+          {% endif %}
+        <p class="signup-text">Not a member? <a href="/signup">Send a request</a></p>
+        <a href="#" class="google-login-btn">
+          <i class="fab fa-google"></i> Login with Google
+        </a>
+      </div>
+      <script src="/static/js/auth.js"></script>
+    </body>
+    </html>
+    

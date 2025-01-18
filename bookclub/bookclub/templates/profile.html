@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Challenge</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+    <link rel="icon" type="image/png" href="/static/images/bookclub-logo.jpg" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+      rel="stylesheet"
+    />
+  </head>
+
+  <body>
+    <div class="logged-in-container">
+      <header>
+        <div class="logo-container">
+          <li><a href="/"><img src="/static/images/bookclub-logo.jpg" alt="Logo" class="logo"></a></li>
+        </div>
+        <div class="burger-menu" onclick="toggleMenu()">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+        <nav id="nav-menu">
+          <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/my_challenge">My Challenge</a></li>
+            <li><a href="/previous_challenges">Alle Challenges</a></li>
+            <li><a href="/recommendations"><i class="fas fa-magic"></i> AI Buchempfehlungen</a></li>
+            <li><a href="/bookmarks">Bookmarked</a></li>
+            <li><a href="/logout">Logout</a></li>
+          </ul>
+        </nav>
+      </header>
+      <main>
+        <div id="profileContainer">
+          <h2>{{ username }}</h2>
+          <p>{{ email }}</p>
+          <img
+            src="/static/images/{{username}}.jpg"
+            alt="Profile Picture"
+            class="profile-pic"
+          />
+          <hr class="section-divider" />
+          <p>Hier findest du eine Übersicht der Wunschkategorien, die du eingereicht hast. </br>
+            Ganz unten kannst du weitere Wunschkategorien einreichen.</p>
+            <p><strong color="red">WICHTIG!</strong> </br>Du kannst nur die Wunschkategorien löschen, die noch niemand benutzt hat.</p>
+          <div class="submitted-books-section">
+            <h2>Wunschkategorien für {{ year }}</h2></br>
+            <div id="myCustomCategories"></div>
+          </div>
+          <h2>Trophäen</h2>
+            <hr class="section-divider" />  
+            <h2>Monatlichen Newsletter abonnieren</h2>
+            <p></br>Erhalte monatlich unseren Newsletter mit dem neuesten Stand </br>des Leaderboards und bald auch monatlichen Trophäen.</p>
+            <div class="newsletter">
+              <form id="newsletterForm" action="/profile/subscribe" method="POST" class="login-form">
+                <div class="form-group">
+                  <label for="email">E-Mail:</label>
+                  <input type="email" id="email" name="email" required />
+                </div>
+                <button type="submit">Subscribe</button>
+              </form>
+                {% if newsletter_email %}
+                <h2>{{ newsletter_email }}</h2></br>
+                {% endif %}
+              <button id="unsubscribeButton" style="display: none;" onclick="unsubscribe()">Unsubscribe</button>              
+            <hr class="section-divider" />  
+            </div>
+          <h2>Wunschkategorie für {{ year }} einreichen</h2>
+          <form id="bookForm" action="/profile/custom_category" method="POST" class="login-form">    
+            <div class="form-group">
+              <label for="category">Meine Kategorie:</label>
+              <input type="text" id="category" name="category" required />
+            </div>
+            <button type="submit">Submit</button>
+          </form>
+        </div>
+      </main>
+    </div>
+    <script>
+      const newsletter_email = "{{ newsletter_email }}";
+      localStorage.setItem("newsletterEmail", newsletter_email);
+    </script>
+    <script src="/static/js/test.js"></script>
+    <script src="/static/js/profile.js"></script>
+  </body>
+</html>

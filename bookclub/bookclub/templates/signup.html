@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/png" href="/static/images/bookclub-logo.jpg" />
+    <title>Signup</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="logged-in-container">
+      <header>
+        <div class="logo-container">
+          <img src="/static/images/bookclub-logo.jpg" alt="Logo" class="logo" />
+        </div>
+        <div class="burger-menu" onclick="toggleMenu()">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+        <nav id="nav-menu">
+          <ul>
+            <li><a href="/login">Login</a></li>
+          </ul>
+        </nav>
+      </header>
+      <main>
+        <h2>Signup</h2>
+        {% if request.query_params.get('message') == 'invalid_user' %}
+        <p class="error-message">Invalid user. Please sign up first.</p>
+      {% endif %}
+        <form id="signupForm" action="/signup" method="POST" class="signup-form">
+          <div class="form-group">
+            <label for="email">Email:*</label>
+            <input type="email" id="email" name="email" required />
+          </div>
+          <div class="form-group">
+            <label for="reason"
+              >Wie bist du auf uns aufmerksam geworden?*</label
+            >
+            <select id="reason" name="reason">
+              <option value="google">Ich bin zufällig darauf gestoßen</option>
+              <option value="friend">Freunde haben mir davon erzählt</option>
+              <option value="other">Anderes</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="friend">Name Freund_in:</label>
+            <input type="friend" id="friend" name="friend" />
+          </div>
+          <button type="submit">Anfrage senden</button>
+        </form>
+        <div
+          id="messageContainer"
+          class="message-container"
+          style="display: none; margin-top: 20px"
+        ></div>
+      </main>
+    </div>
+    <script src="/static/js/signup.js"></script>
+    <script src="/static/js/test.js"></script>
+  </body>
+</html>
