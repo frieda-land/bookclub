@@ -47,7 +47,7 @@ function createUsersCustomCategoriesTable(data) {
   document.getElementById("myCustomCategories").appendChild(container);
 }
 
-function fetchChallengeData() {
+function fetchCustomCategories() {
   // Replace the URL with your backend API endpoint
   const apiUrl = `/profile/custom_category/${localStorage.getItem("userId")}`;
 
@@ -63,7 +63,7 @@ function fetchChallengeData() {
     });
 }
 
-fetchChallengeData();
+fetchCustomCategories();
 
 document.addEventListener("DOMContentLoaded", function () {
   const newsletterEmail = localStorage.getItem("newsletterEmail");

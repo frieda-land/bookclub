@@ -1,18 +1,22 @@
 from crud import crud
 from fastapi import HTTPException
+from requests import Session
+from schemas.schema import ChallengeCategoryCreate
 
 
-def create_single_category(db, category, user_id):
+def create_single_category(db: Session, category: ChallengeCategoryCreate, user_id=None):
     category_exists = None
-    if not category.original_number:
+    if not category.original_number and user_id:
         last_category_number = crud.get_latest_number_for_year(db)
         category.original_number = last_category_number + 1
         category.user_id_custom_category = user_id
+    elif not category.original_number:
+        raise HTTPException(status_code=400, detail="Original number is required")
     else:
         category_exists = crud.get_category_by_number(db, category.original_number, category.year)
     if category_exists:
         raise HTTPException(status_code=400, detail="Category already registered")
-    crud.create_challenge_category(db, category)
+    return crud.create_challenge_category(db, category)
 
 
 challenges = {

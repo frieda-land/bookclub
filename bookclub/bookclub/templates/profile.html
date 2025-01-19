@@ -83,6 +83,9 @@
               <label for="category">Meine Kategorie:</label>
               <input type="text" id="category" name="category" required />
             </div>
+            {% if error %}
+            <h2>{{ error }}</h2></br>
+            {% endif %}
             <button type="submit">Submit</button>
           </form>
         </div>

@@ -8,12 +8,8 @@ router = APIRouter(prefix="/categories", tags=["categories"])
 
 
 @router.post("/create")
-def create_category(
-    category: ChallengeCategoryCreate,
-    user_id: int,
-    db: Session = Depends(get_db),
-):
-    create_single_category(db, category, user_id)
+def create_category(category: ChallengeCategoryCreate, db: Session = Depends(get_db), user_id: int = None):
+    return create_single_category(db, category, user_id)
 
 
 @router.post(
@@ -37,9 +33,9 @@ def create_all_categories(db: Session = Depends(get_db), advanced: bool = False)
                     created_categories.append(created_category)
                 except HTTPException:
                     continue
-    except Exception:
+    except Exception as e:
         # TODO add/use logging
-        print(Exception)
+        print(e)
         return {
             "status": "Failed",
             "created_categories": created_categories,

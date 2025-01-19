@@ -46,8 +46,21 @@ async def profile_custom_category(
     category: str = Form(...),
 ):
     category = ChallengeCategoryCreate(title=category)
-    # todo catch error and find better solution for returning the as above, DRY
-    create_single_category(db, category, current_user.id)
+    try:
+        create_single_category(db, category, current_user.id)
+    except Exception as e:
+        return templates.TemplateResponse(
+            request=request,
+            name="profile.html",
+            context={
+                "user_id": current_user.id,
+                "email": current_user.email,
+                "username": current_user.username,
+                "year": CURRENT_YEAR,
+                "newsletter_email": current_user.newsletter_email_address,
+                "error": e,
+            },
+        )
     return templates.TemplateResponse(
         request=request,
         name="profile.html",
