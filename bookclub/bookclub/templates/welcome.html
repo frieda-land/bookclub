@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BookClub Newsletter</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        font-family: "Libre Baskerville";
+        background-color: #f4f4f4;
+        margin: 0;
+        padding: 0;
+      }
+      .container {
+        width: 100%;
+        max-width: 600px;
+        margin: 0 auto;
+        background-color: #ffffff;
+        padding: 20px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+      .header {
+        text-align: center;
+        padding: 10px 0;
+      }
+      .header img {
+        max-width: 150px;
+      }
+      .content {
+        padding: 20px;
+      }
+      .content h1 {
+        color: #333333;
+      }
+      .content p {
+        color: #666666;
+        line-height: 1.6;
+      }
+      .footer {
+        text-align: center;
+        padding: 10px 0;
+        color: #999999;
+        font-size: 12px;
+      }
+      .button-container {
+        text-align: center; /* Center the button container */
+        margin: 20px 0;
+      }
+      .button {
+        display: inline-block;
+        padding: 10px 20px;
+        margin: 20px 0;
+        background-color: #7eacb5;
+        color: #ffffff;
+        text-decoration: none;
+        border-radius: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <!-- make publicly available/> -->
+        <img src="/static/images/bookclub-logo.jpg" alt="Logo" class="logo" />
+      </div>
+      <div class="content">
+        <h1>Welcome to Shelfie!</h1>
+        <p>Hey,</p>
+        <p>
+          Welcome to Shelfie, you are now registered and can go ahead and log
+          in. We are excited to have you as part of our community. Subscribe to
+          our newsletter to get the latest updates on the leaderboard and more.
+        </p>
+        <p>We hope you enjoy being a part of Shelfie!</p>
+        <p>Happy Reading!</p>
+        <p>The Shelfie Team</p>
+        <div class="button-container">
+          <a href="{{ login_url }}" class="button">Login</a>
+        </div>
+      </div>
+      <div class="footer">
+        <p>&copy; 2025 Kati's bookclub All rights reserved.</p>
+        <p>123 Book Street, Reading City, RS 12345</p>
+      </div>
+    </div>
+  </body>
+</html>

@@ -12,7 +12,7 @@
   </head>
     <body class="login-body">
       <div class="login-body-content">
-        <img src="/static/images/bookclub-logo.jpg" alt="Bookclub Logo">
+        <img style="border-radius: 15px;" src="/static/images/bookclub-logo.jpg" alt="Bookclub Logo">
         <h2>Login</h2>
           <p class="error-message" style="display: none;">Invalid login credentials.</p>
           {% if request.query_params.get('message') == 'expired' %}

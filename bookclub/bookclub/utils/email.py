@@ -1,5 +1,3 @@
-import os
-
 from crud import crud
 from jinja2 import Environment, FileSystemLoader
 from schemas.schema import NewsletterUser
@@ -7,6 +5,7 @@ from sendgrid import Mail, SendGridAPIClient
 from settings import settings
 
 EMAIL_ADMIN = settings.EMAIL_ADMIN
+TWILLIO_KEY = settings.TWILLIO_KEY
 
 
 def send_monthly_newsletter(db):
@@ -29,6 +28,16 @@ def send_monthly_newsletter(db):
         db.close()
 
 
+def inform_user_about_signup(email: str):
+    context = {
+        "login_url": "http://localhost:8000/unsubscribe",
+    }
+    env = Environment(loader=FileSystemLoader("templates"))
+    template = env.get_template("welcome.html", context)
+    html = template.render(context)
+    send_email("Welcome to BookClub", html, email)
+
+
 def send_email(subject: str, body: str, to: str = EMAIL_ADMIN):
     message = Mail(
         from_email=EMAIL_ADMIN,
@@ -37,7 +46,7 @@ def send_email(subject: str, body: str, to: str = EMAIL_ADMIN):
         html_content=body,
     )
     try:
-        sg = SendGridAPIClient(os.getenv("TWILLIO_KEY"))
+        sg = SendGridAPIClient(TWILLIO_KEY)
         return sg.send(message)
     except Exception as e:
         raise e
