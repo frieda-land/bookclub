@@ -69,10 +69,19 @@ class ChallengeCategory(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     original_number: Mapped[int] = mapped_column(Integer)
-    title: Mapped[str] = mapped_column(String, index=True)
+    title: Mapped[str] = mapped_column(String, index=True, unique=True)
     year: Mapped[int] = mapped_column(Integer, index=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now(tz=timezone.utc))
     user_id_custom_category: Mapped[int] = mapped_column(ForeignKey("user.id"), nullable=True)
     advanced: Mapped[bool] = mapped_column(Boolean, default=False)
 
     users: Mapped[List["Association"]] = relationship(back_populates="challenge_category")
+
+
+class AllowedEmailAddress(Base):
+    __tablename__ = "allowed_email_address"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    email: Mapped[str] = mapped_column(String, unique=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now(tz=timezone.utc))
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True)
