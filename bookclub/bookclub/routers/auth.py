@@ -19,7 +19,6 @@ GOOGLE_CLIENT_ID = settings.GOOGLE_CLIENT_ID
 GOOGLE_CLIENT_SECRET = settings.GOOGLE_CLIENT_SECRET
 GOOGLE_REDIRECT_URI = settings.GOOGLE_REDIRECT_URI
 GOOGLE_USER_INFO_URL = settings.GOOGLE_USER_INFO_URL
-ALLOWED_EMAILS = settings.ALLOWED_EMAILS
 ACCESS_TOKEN_EXPIRE_MINUTES = settings.ACCESS_TOKEN_EXPIRE_MINUTES
 
 
@@ -27,7 +26,7 @@ def get_authorization_url():
     params = {
         "response_type": "code",
         "client_id": GOOGLE_CLIENT_ID,
-        "redirect_uri": "http://localhost:8000/auth/google",
+        "redirect_uri": GOOGLE_REDIRECT_URI,
         "scope": "openid profile email",
         "access_type": "offline",
     }
@@ -37,6 +36,7 @@ def get_authorization_url():
 @router.get("/google_auth_url")
 async def login(request: Request):
     url = get_authorization_url()
+    print(url)
     return {"authorization_url": url}
 
 
@@ -69,12 +69,15 @@ async def auth_google(request: Request, code: str, db: Session = Depends(get_db)
         response = await client.get(GOOGLE_USER_INFO_URL, headers={"Authorization": f"Bearer {access_token}"})
         response.raise_for_status()
         user_info = response.json()
-
+    breakpoint()
     user_google_email = user_info.get("email")
     user_google_name = user_info.get("name")
     user = db.query(models.User).filter(models.User.email == user_google_email).first()
+    is_allowed_email_address = (
+        db.query(models.AllowedEmailAddress).filter(models.AllowedEmailAddress.email == user_google_email).first()
+    )
 
-    if not user and user_google_email in ALLOWED_EMAILS:
+    if not user and is_allowed_email_address:
         try:
             user = crud.create_user(
                 db,
@@ -95,3 +98,9 @@ async def auth_google(request: Request, code: str, db: Session = Depends(get_db)
     response.set_cookie(key="user_id", value=str(user.id))
 
     return response
+
+
+@router.post("/add_email")
+def add_email_to_allowed_emails(email: str, db: Session = Depends(get_db)):
+    crud.create_allowed_email(db, schema.AllowedEmailCreate(email=email))
+    return {"message": "Email added to allowed emails"}

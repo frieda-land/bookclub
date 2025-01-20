@@ -264,3 +264,11 @@ def unsubscribe_user_from_newsletter(db: Session, user: models.User):
 
 def get_newsletter_subscribers(db: Session):
     return db.query(models.User).filter(models.User.newsletter_email_address is not None).all()
+
+
+def create_allowed_email(db: Session, allowed_email: schema.AllowedEmailCreate):
+    allowed_email = models.AllowedEmailAddress(email=allowed_email.email)
+    db.add(allowed_email)
+    db.commit()
+    db.refresh(allowed_email)
+    return allowed_email

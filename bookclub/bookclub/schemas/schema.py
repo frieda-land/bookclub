@@ -90,3 +90,7 @@ class SubmittedBookWithUsername(SubmittedBook):
     username: str
     created_at: datetime
     category_id: int
+
+
+class AllowedEmailCreate(BaseModel):
+    email: str

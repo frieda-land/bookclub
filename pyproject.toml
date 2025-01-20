@@ -26,6 +26,8 @@ fastapi = "0.115.6"
 starlette = "^0.41"
 pydantic-settings = "^2.7.1"
 python-multipart = "^0.0.20"
+pg8000 = "^1.31.2"
+cloud-sql-python-connector = "^1.16.0"
 
 
 [build-system]
