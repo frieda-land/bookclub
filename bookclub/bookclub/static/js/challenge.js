@@ -99,8 +99,8 @@ document
     if (actionUrl.startsWith("http:")) {
       actionUrl = actionUrl.replace("http:", "https:");
     }
-
-    fetch(actionUrl, {
+    // Needed see https://stackoverflow.com/questions/63511413/fastapi-redirection-for-trailing-slash-returns-non-ssl-link
+    fetch(`${actionUrl}/`, {
       method: "POST",
       body: formData,
       credentials: "include", // Include credentials (cookies) in the request

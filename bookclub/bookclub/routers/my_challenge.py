@@ -38,8 +38,6 @@ def submit_book(
     year: int = CURRENT_YEAR,
 ):
     try:
-        print("submitting book {} {} {} {}".format(author, book_name, category, rating))
-        print("Types: {} {} {} {}".format(type(author), type(book_name), type(category), type(rating)))
         crud.create_entry_for_user(
             db,
             int(current_user.id),
