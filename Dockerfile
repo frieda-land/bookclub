@@ -1,5 +1,12 @@
 FROM python:3.10-slim
 
+# Set environment variables
+# PYTHONDONTWRITEBYTECODE Purpose: Prevents Python from writing .pyc files (compiled bytecode) to disk.
+# PYTHONUNBUFFERED        Purpose: Prevents Python from buffering stdout and stderr (it just writes them directly).
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
+
+
 WORKDIR /bookclub
 
 RUN pip install poetry

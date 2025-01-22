@@ -95,7 +95,12 @@ document
     const formData = new FormData(form);
     const userId = localStorage.getItem("userId");
 
-    fetch(form.action, {
+    let actionUrl = form.action;
+    if (actionUrl.startsWith("http:")) {
+      actionUrl = actionUrl.replace("http:", "https:");
+    }
+
+    fetch(actionUrl, {
       method: "POST",
       body: formData,
       credentials: "include", // Include credentials (cookies) in the request
