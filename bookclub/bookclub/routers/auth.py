@@ -69,7 +69,7 @@ async def auth_google(request: Request, code: str, db: Session = Depends(get_db)
         response = await client.get(GOOGLE_USER_INFO_URL, headers={"Authorization": f"Bearer {access_token}"})
         response.raise_for_status()
         user_info = response.json()
-    breakpoint()
+
     user_google_email = user_info.get("email")
     user_google_name = user_info.get("name")
     user = db.query(models.User).filter(models.User.email == user_google_email).first()

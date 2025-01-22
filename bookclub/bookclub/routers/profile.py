@@ -76,7 +76,7 @@ async def profile_custom_category(
 
 @router.get("/custom_category/{user_id}")
 def my_books_custom_category(user_id: str, year: int = CURRENT_YEAR, db: Session = Depends(get_db)):
-    custom_categories = crud.get_custom_categories(db, user_id)
+    custom_categories = crud.get_custom_categories(db, int(user_id))
     return [custom.title for custom in custom_categories] if custom_categories else []
 
 

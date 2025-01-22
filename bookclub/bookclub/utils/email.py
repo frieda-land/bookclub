@@ -18,7 +18,7 @@ def send_monthly_newsletter(db):
         for email in email_addresses:
             context = {
                 "recipient_name": email.username,
-                "unsubscribe_url": "https://yourdomain.com/unsubscribe",
+                "unsubscribe_url": "https://shelfie.frieda.dev/profile/unsubscribe",
             }
             env = Environment(loader=FileSystemLoader("templates"))
             template = env.get_template("newsletter.html", context)
@@ -30,7 +30,7 @@ def send_monthly_newsletter(db):
 
 def inform_user_about_signup(email: str):
     context = {
-        "login_url": "http://localhost:8000/unsubscribe",
+        "login_url": "https://shelfie.frieda.dev/profile/unsubscribe",
     }
     env = Environment(loader=FileSystemLoader("templates"))
     template = env.get_template("welcome.html", context)

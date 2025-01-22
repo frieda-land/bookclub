@@ -99,7 +99,7 @@ def get_category_for_user(db: Session, user_id: int, category_number: int):
 
 def create_entry_for_user(
     db: Session,
-    user_id: str,
+    user_id: int,
     original_number: int,
     year: int,
     submitted_book: schema.SubmittedBook,

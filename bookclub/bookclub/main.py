@@ -37,7 +37,6 @@ app.include_router(auth.router)
 app.include_router(my_challenge.router)
 app.include_router(bookmarks.router)
 app.include_router(categories.router)
-app.include_router(my_challenge.router)
 app.include_router(previous_challenges.router)
 app.include_router(profile.router)
 
