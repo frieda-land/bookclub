@@ -11,6 +11,7 @@ from requests import Session
 from schemas import schema
 from settings import settings
 from utils.auth import create_access_token
+from utils.email import inform_user_about_signup
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -102,5 +103,13 @@ async def auth_google(request: Request, code: str, db: Session = Depends(get_db)
 
 @router.post("/add_email")
 def add_email_to_allowed_emails(email: str, db: Session = Depends(get_db)):
-    crud.create_allowed_email(db, schema.AllowedEmailCreate(email=email))
+    try:
+        crud.create_allowed_email(db, schema.AllowedEmailCreate(email=email))
+    except Exception:
+        return {"message": "User already exists"}
+    try:
+        inform_user_about_signup(email)
+    except Exception as e:
+        # add logging
+        return {"message": "Email added to allowed emails, but failed to inform user: " + str(e)}
     return {"message": "Email added to allowed emails"}

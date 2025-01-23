@@ -35,7 +35,11 @@ def inform_user_about_signup(email: str):
     env = Environment(loader=FileSystemLoader("templates"))
     template = env.get_template("welcome.html", context)
     html = template.render(context)
-    send_email("Welcome to BookClub", html, email)
+    try:
+        send_email("Welcome to BookClub", html, email)
+    except Exception as e:
+        # todo add exponential backoff
+        return
 
 
 def send_email(subject: str, body: str, to: str = EMAIL_ADMIN):

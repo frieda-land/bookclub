@@ -269,6 +269,10 @@ def get_newsletter_subscribers(db: Session):
 def create_allowed_email(db: Session, allowed_email: schema.AllowedEmailCreate):
     allowed_email = models.AllowedEmailAddress(email=allowed_email.email)
     db.add(allowed_email)
-    db.commit()
+    try:
+        db.commit()
+    except Exception:
+        db.rollback()
+        return
     db.refresh(allowed_email)
     return allowed_email
