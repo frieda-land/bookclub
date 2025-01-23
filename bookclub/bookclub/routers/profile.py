@@ -84,7 +84,6 @@ def my_books_custom_category(user_id: str, year: int = CURRENT_YEAR, db: Session
 def delete_custom_category(request: Request, user_id: str, category_title: str, db: Session = Depends(get_db)):
     try:
         submitted_books = crud.submitted_books_for_category_by_title(db, category_title)
-        breakpoint()
         if submitted_books:
             return JSONResponse(
                 content={"message": "Cannot delete category as it has submissions."},

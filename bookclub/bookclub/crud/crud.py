@@ -231,7 +231,6 @@ def remove_category_by_title(db: Session, title: str, user_id: int):
     )
     db.delete(category)
     db.commit()
-    breakpoint()
     return category
 
 

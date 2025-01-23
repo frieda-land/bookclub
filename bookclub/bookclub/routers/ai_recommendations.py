@@ -66,9 +66,9 @@ async def post_recommendations(
 async def save_recommendation(request: Request, db: Session = Depends(get_db)):
     data = await request.json()
     try:
-        category_num = crud.get_category_by_original_number(db, data["category"]).id
+        category_num = crud.get_category_by_original_number(db, int(data["category"])).id
         bookmark_content = data["content"].split(". ")[1]
-        crud.add_bookmark(db, data["user_id"], category_num, bookmark_content)
+        crud.add_bookmark(db, int(data["user_id"]), category_num, bookmark_content)
     except KeyError:
         return JSONResponse(
             content={"message": "Failed to save favourite. Missing value"},
@@ -81,8 +81,8 @@ async def save_recommendation(request: Request, db: Session = Depends(get_db)):
 async def unsave_recommendation(request: Request, db: Session = Depends(get_db)):
     data = await request.json()
     try:
-        category_num = crud.get_category_by_original_number(db, data["category"])
-        crud.remove_bookmark(data["user_id"], category_num)
+        category_num = crud.get_category_by_original_number(db, int(data["category"]))
+        crud.remove_bookmark(int(data["user_id"]), category_num)
     except KeyError:
         return JSONResponse(
             content={"message": "Failed to unsave favourite. Missing value"},
