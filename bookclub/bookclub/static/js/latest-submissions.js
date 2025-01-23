@@ -23,15 +23,15 @@ function displayLatestSubmissions(submissions) {
     submissionDiv.appendChild(title);
 
     const author = document.createElement("p");
-    author.textContent = `Author: ${submission.author}`;
+    author.textContent = `Autor:in: ${submission.author}`;
     submissionDiv.appendChild(author);
 
     const user = document.createElement("p");
-    user.textContent = `Submitted by: ${submission.username}`;
+    user.textContent = `Gepostet von: ${submission.username}`;
     submissionDiv.appendChild(user);
 
     const date = document.createElement("p");
-    date.textContent = `Date: ${new Date(
+    date.textContent = `Datum: ${new Date(
       submission.created_at
     ).toLocaleDateString()}`;
     submissionDiv.appendChild(date);

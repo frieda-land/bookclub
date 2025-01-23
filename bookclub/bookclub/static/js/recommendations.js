@@ -15,7 +15,7 @@ document
     submitButton.classList.add("loading"); // Add loading class to show blinking dots
     localStorage.setItem("category", formData.get("category"));
 
-    fetch(form.action, {
+    fetch(`${form.action}/`, {
       method: "POST",
       body: formData,
       credentials: "include", // Include credentials (cookies) in the request

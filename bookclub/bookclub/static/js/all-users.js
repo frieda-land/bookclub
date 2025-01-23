@@ -12,8 +12,8 @@ function createTable(data) {
     }
     const itemContent = `
     <strong>${item.owner}</strong> 
-    - <strong>${item.number_of_books_read}</strong> book(s)
-    <button class="toggle-button">Show Books</button>
+     </br>${item.number_of_books_read} Bücher
+    <button class="toggle-button">Welche?</button>
     <div class="details" style="display: none;">
       ${item.books
         .map(

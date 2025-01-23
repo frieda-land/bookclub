@@ -507,13 +507,37 @@ form.signup-form,
   }
 
   .challenge-box {
-    max-width: 100%; /* Adjust the width for mobile view */
+    max-width: 80%; /* Adjust the width for mobile view */
     height: auto; /* Adjust the height for mobile view */
   }
 
   .button-container button {
     padding: 8px 16px; /* Make the button smaller */
     font-size: 16px; /* Adjust the font size for mobile view */
+  }
+
+  .submissions-container {
+    gap: 10px;
+    margin-top: 10px;
+  }
+
+  .submission {
+    padding: 10px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+  }
+
+  .submission h3 {
+    font-size: 1.2em;
+  }
+
+  .submission p {
+    font-size: 1em;
+  }
+
+  #latestSubmissions {
+    padding: 8px 16px;
+    font-size: 14px;
+    margin-top: 15px;
   }
 }
 
