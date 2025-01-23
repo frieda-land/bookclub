@@ -7,10 +7,11 @@ from fastapi import APIRouter, Depends, Form, Request
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 from models import models
 from requests import Session
-from schemas.schema import ChallengeCategoryCreate
+from schemas.schema import ChallengeCategoryCreate, NewsletterUser
 from settings import settings
 from utils.auth import get_current_active_user
 from utils.categories import create_single_category
+from utils.email import send_welcome_to_newsletter
 
 router = APIRouter(prefix="/profile", tags=["profile"])
 
@@ -109,6 +110,15 @@ async def subscribe_to_newsletter(
     except Exception:
         return JSONResponse(
             content={"message": "Failed to subscribe to newsletter."},
+            status_code=400,
+        )
+    subscriber = NewsletterUser(newsletter_email_address=email, username=current_user.username)
+    try:
+        send_welcome_to_newsletter(db, subscriber)
+    except Exception:
+        # todo add exponential backoff
+        return JSONResponse(
+            content={"message": "Added user but failed to send welcome email."},
             status_code=400,
         )
 

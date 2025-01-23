@@ -8,6 +8,7 @@ EMAIL_ADMIN = settings.EMAIL_ADMIN
 TWILLIO_KEY = settings.TWILLIO_KEY
 
 
+# Todo create proper Email service
 def send_monthly_newsletter(db):
     try:
         subscribers = crud.get_newsletter_subscribers(db)
@@ -28,9 +29,23 @@ def send_monthly_newsletter(db):
         db.close()
 
 
+def send_welcome_to_newsletter(db, recipient: NewsletterUser):
+    try:
+        context = {
+            "recipient_name": recipient.username,
+            "unsubscribe_url": "https://shelfie.frieda.dev/profile/unsubscribe",
+        }
+        env = Environment(loader=FileSystemLoader("templates"))
+        template = env.get_template("newsletter_welcome.html", context)
+        html = template.render(context)
+        send_email("Welcome To Monthly Newsletter", html, recipient.newsletter_email_address)
+    finally:
+        db.close()
+
+
 def inform_user_about_signup(email: str):
     context = {
-        "login_url": "https://shelfie.frieda.dev/profile/unsubscribe",
+        "login_url": "https://shelfie.frieda.dev/login",
     }
     env = Environment(loader=FileSystemLoader("templates"))
     template = env.get_template("welcome.html", context)
