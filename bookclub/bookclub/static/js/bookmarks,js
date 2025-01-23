@@ -29,7 +29,7 @@ function createUsersBooksTable(data) {
       })
         .then((response) => {
           if (response.ok) {
-            alert(`Bookmark "${item.bookmark_content}" deleted successfully!`);
+            alert("Bookmark deleted successfully!");
             itemDiv.remove(); // Remove the item from the DOM
           } else {
             alert("Failed to delete the book. Please try again.");
