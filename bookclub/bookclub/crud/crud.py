@@ -1,3 +1,5 @@
+from datetime import datetime, timedelta
+
 from models import models
 from schemas import schema
 from sqlalchemy.orm import Session
@@ -152,6 +154,18 @@ def get_books_for_user_for_year(db: Session, user_id: str, year: int):
     return [challenge for challenge in user.challenge_categories if challenge.challenge_category.year == year]
 
 
+def get_books_for_user_for_last_30_days(db: Session, user_id: int):
+    checkpoint = datetime.now() - timedelta(days=30)
+    return (
+        db.query(models.Association)
+        .filter(
+            models.Association.user_id == user_id,
+            models.Association.created_at > checkpoint,
+        )
+        .all()
+    )
+
+
 # todo make year dynamic
 def get_unused_categories(db: Session, user_id: int, year: int):
     return (
@@ -263,7 +277,7 @@ def unsubscribe_user_from_newsletter(db: Session, user: models.User):
 
 
 def get_newsletter_subscribers(db: Session):
-    return db.query(models.User).filter(models.User.newsletter_email_address is not None).all()
+    return db.query(models.User).filter(models.User.newsletter_email_address.isnot(None)).all()
 
 
 def create_allowed_email(db: Session, allowed_email: schema.AllowedEmailCreate):
@@ -276,3 +290,25 @@ def create_allowed_email(db: Session, allowed_email: schema.AllowedEmailCreate):
         return
     db.refresh(allowed_email)
     return allowed_email
+
+
+def get_last_submitted_books(db: Session, time_delta: int = 30):
+    checkpoint = datetime.now() - timedelta(days=time_delta)
+    return db.query(models.Association).filter(models.Association.created_at > checkpoint).all()
+
+
+def get_reader_of_the_month(db: Session):
+    all_readers_of_the_month = []
+    current_max = 0
+    for user in get_users(db):
+        users_completed_categories = get_books_for_user_for_last_30_days(db, user.id)
+        amount = len(users_completed_categories)
+        if amount == 0:
+            continue
+        if amount > current_max:
+            all_readers_of_the_month = []
+            all_readers_of_the_month.append(schema.ReaderOfTheMonth(user=user.username, number_of_books_read=amount))
+            current_max = len(users_completed_categories)
+        elif amount == current_max:
+            all_readers_of_the_month.append(schema.ReaderOfTheMonth(user=user.username, number_of_books_read=amount))
+    return all_readers_of_the_month

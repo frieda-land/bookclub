@@ -45,6 +45,12 @@ class User(UserBase):
 class NewsletterUser(BaseModel):
     newsletter_email_address: str
     username: str
+    user_id: int
+
+
+class ReaderOfTheMonth(BaseModel):
+    user: str
+    number_of_books_read: int
 
 
 class GroupBase(BaseModel):

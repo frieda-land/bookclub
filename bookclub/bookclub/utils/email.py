@@ -1,8 +1,12 @@
+import locale
+from datetime import datetime
+
 from crud import crud
 from jinja2 import Environment, FileSystemLoader
 from schemas.schema import NewsletterUser
 from sendgrid import Mail, SendGridAPIClient
 from settings import settings
+from utils.leaderboard import generate_leaderboard
 
 EMAIL_ADMIN = settings.EMAIL_ADMIN
 TWILLIO_KEY = settings.TWILLIO_KEY
@@ -13,14 +17,33 @@ def send_monthly_newsletter(db):
     try:
         subscribers = crud.get_newsletter_subscribers(db)
         email_addresses = [
-            NewsletterUser(newsletter_email_address=subscriber.newsletter_email_address, username=subscriber.username)
+            NewsletterUser(
+                newsletter_email_address=subscriber.newsletter_email_address,
+                username=subscriber.username,
+                user_id=subscriber.id,
+            )
             for subscriber in subscribers
         ]
+        leaderboard = generate_leaderboard(db)
+        books_last_30_days = crud.get_last_submitted_books(db)
+        readers_of_the_month = crud.get_reader_of_the_month(db)
         for email in email_addresses:
+            locale.setlocale(locale.LC_TIME, "de_DE.UTF-8")
             context = {
                 "recipient_name": email.username,
-                "unsubscribe_url": "https://shelfie.frieda.dev/profile/unsubscribe",
+                "month": datetime.now().strftime("%B"),
+                "leaderboard": leaderboard[:7],
+                "unsubscribe_url": f"https://shelfie.frieda.dev/auth/unsubscribe/{email.user_id}",
+                "number_of_books_read_last_30_days": len(books_last_30_days),
+                "average_rating_last_30_days": round(
+                    sum([book.rating for book in books_last_30_days]) / len(books_last_30_days), 2
+                ),
+                "readers_of_the_month": [
+                    {"user": reader.user, "number_of_books_read": reader.number_of_books_read}
+                    for reader in readers_of_the_month
+                ],
             }
+            locale.setlocale(locale.LC_TIME, "C")
             env = Environment(loader=FileSystemLoader("templates"))
             template = env.get_template("newsletter.html", context)
             html = template.render(context)
@@ -33,7 +56,7 @@ def send_welcome_to_newsletter(db, recipient: NewsletterUser):
     try:
         context = {
             "recipient_name": recipient.username,
-            "unsubscribe_url": "https://shelfie.frieda.dev/profile/unsubscribe",
+            "unsubscribe_url": f"https://shelfie.frieda.dev/auth/unsubscribe/{recipient.user_id}",
         }
         env = Environment(loader=FileSystemLoader("templates"))
         template = env.get_template("newsletter_welcome.html", context)

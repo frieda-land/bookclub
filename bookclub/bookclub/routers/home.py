@@ -10,6 +10,7 @@ from requests import Session
 from settings import settings
 from utils.auth import get_current_active_user
 from utils.email import send_email
+from utils.leaderboard import generate_leaderboard
 
 router = APIRouter(tags=["home"])
 
@@ -75,26 +76,7 @@ async def all_users(
     db: Session = Depends(get_db),
     year: Optional[int] = Query(settings.CURRENT_YEAR),
 ):
-    all_users = []
-    for user in crud.get_users(db):
-        users_completed_categories = crud.get_books_for_user_for_year(db, user.id, year)
-        if len(users_completed_categories) == 0:
-            continue
-        all_users.append(
-            {
-                "number_of_books_read": len(users_completed_categories),
-                "owner": user.username,
-                "books": [
-                    {
-                        "book_name": item.book_name,
-                        "author": item.author,
-                        "rating": item.rating,
-                    }
-                    for item in users_completed_categories
-                ],
-            }
-        )
-    return sorted(all_users, key=lambda item: item["number_of_books_read"], reverse=True)
+    return generate_leaderboard(db, year)
 
 
 @router.get("/latest_submissions", response_class=JSONResponse)

@@ -2,6 +2,7 @@ from datetime import timedelta
 from urllib.parse import urlencode
 
 import httpx
+from config import templates
 from crud import crud
 from database import get_db
 from fastapi import APIRouter, Depends, HTTPException, Request
@@ -37,7 +38,6 @@ def get_authorization_url():
 @router.get("/google_auth_url")
 async def login(request: Request):
     url = get_authorization_url()
-    print(url)
     return {"authorization_url": url}
 
 
@@ -113,3 +113,10 @@ def add_email_to_allowed_emails(email: str, db: Session = Depends(get_db)):
         # add logging
         return {"message": "Email added to allowed emails, but failed to inform user: " + str(e)}
     return {"message": "Email added to allowed emails"}
+
+
+@router.post("/unsubscribe/{user_id}")
+def unsubscribe_user_from_newsletter(user_id: str, db: Session = Depends(get_db)):
+    user = crud.get_user(db, int(user_id))
+    crud.unsubscribe_user_from_newsletter(db, user)
+    return templates.TemplateResponse("unsubscribed.html")

@@ -112,7 +112,7 @@ async def subscribe_to_newsletter(
             content={"message": "Failed to subscribe to newsletter."},
             status_code=400,
         )
-    subscriber = NewsletterUser(newsletter_email_address=email, username=current_user.username)
+    subscriber = NewsletterUser(newsletter_email_address=email, username=current_user.username, user_id=current_user.id)
     try:
         send_welcome_to_newsletter(db, subscriber)
     except Exception:
