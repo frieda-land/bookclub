@@ -361,9 +361,13 @@ form.signup-form,
   background-color: white; /* Optional: background for the icon */
   border-radius: 50%;
   padding: 5px;
-  color: rgba(0, 0, 0, 0.7); /* Adjust color as needed */
+  color: #fadfa1; /* Adjust color as needed */
   font-size: 40px; /* Adjust icon size */
   transform: rotate(-10deg); /* Rotate the icon by 20 degrees */
+}
+
+.profile {
+  align-items: center;
 }
 
 .profile-pic {
@@ -371,6 +375,13 @@ form.signup-form,
   height: 250px;
   border-radius: 50%;
   object-fit: cover;
+}
+
+.profile-pic-thumbnail {
+  width: 50px; /* Adjust the size as needed */
+  height: 50px; /* Adjust the size as needed */
+  border-radius: 50%;
+  margin-right: 10px;
 }
 
 .challenge-container {

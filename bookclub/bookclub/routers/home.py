@@ -68,7 +68,9 @@ async def bookclub(
 ):
     if isinstance(current_user, RedirectResponse):
         return current_user
-    return templates.TemplateResponse("home.html", {"request": request, "user_id": current_user.id})
+    return templates.TemplateResponse(
+        "home.html", {"request": request, "user_id": current_user.id, "year": CURRENT_YEAR}
+    )
 
 
 @router.get("/all_users")

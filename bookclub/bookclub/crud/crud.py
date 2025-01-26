@@ -2,7 +2,10 @@ from datetime import datetime, timedelta
 
 from models import models
 from schemas import schema
+from settings import settings
 from sqlalchemy.orm import Session
+
+CURRENT_YEAR = settings.CURRENT_YEAR
 
 
 def get_user(db: Session, user_id: int):
@@ -10,7 +13,7 @@ def get_user(db: Session, user_id: int):
 
 
 def get_user_by_email(db: Session, email: str):
-    return db.query(models.User).filter(models.User.email == email).first()
+    return db.query(models.User).filter(models.User.email == email.lower()).first()
 
 
 def get_user_by_username(db: Session, username: str):
@@ -22,7 +25,7 @@ def get_users(db: Session, skip: int = 0, limit: int = 100):
 
 
 def create_user(db: Session, user: schema.UserCreate):
-    db_user = models.User(email=user.email, username=user.username)
+    db_user = models.User(email=user.email.lower(), username=user.username)
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
@@ -64,6 +67,17 @@ def get_category_by_original_number(db: Session, original_number: int, year: int
         db.query(models.ChallengeCategory)
         .filter(
             models.ChallengeCategory.original_number == original_number,
+            models.ChallengeCategory.year == year,
+        )
+        .first()
+    )
+
+
+def get_category_by_title(db: Session, title: str, year: int = 2025):
+    return (
+        db.query(models.ChallengeCategory)
+        .filter(
+            models.ChallengeCategory.title == title,
             models.ChallengeCategory.year == year,
         )
         .first()
@@ -182,7 +196,18 @@ def get_unused_categories(db: Session, user_id: int, year: int):
 
 
 def get_latest_submissions(db: Session, limit: int = 3):
-    return db.query(models.Association).order_by(models.Association.created_at.desc()).limit(limit).all()
+    first_day_of_year = datetime(CURRENT_YEAR, 1, 1)
+    return (
+        db.query(models.Association)
+        .join(models.ChallengeCategory, models.Association.category_id == models.ChallengeCategory.id)
+        .filter(
+            models.Association.created_at > first_day_of_year,
+            models.ChallengeCategory.year == CURRENT_YEAR,
+        )
+        .order_by(models.Association.created_at.desc())
+        .limit(limit)
+        .all()
+    )
 
 
 def add_bookmark(db: Session, user_id: int, category_id: int, book_info: str):
@@ -265,7 +290,7 @@ def submitted_books_for_category_by_title(db: Session, title: str):
 
 def subscribe_user_to_newsletter(db: Session, user: models.User, email: str):
     user = get_user(db, user.id)
-    user.newsletter_email_address = email
+    user.newsletter_email_address = email.lower()
     db.commit()
     db.refresh(user)
     return user
@@ -284,7 +309,7 @@ def get_newsletter_subscribers(db: Session):
 
 
 def create_allowed_email(db: Session, allowed_email: schema.AllowedEmailCreate):
-    allowed_email = models.AllowedEmailAddress(email=allowed_email.email)
+    allowed_email = models.AllowedEmailAddress(email=allowed_email.email.lower())
     db.add(allowed_email)
     try:
         db.commit()
@@ -293,6 +318,10 @@ def create_allowed_email(db: Session, allowed_email: schema.AllowedEmailCreate):
         return
     db.refresh(allowed_email)
     return allowed_email
+
+
+def is_allowed_email(db: Session, email: str):
+    return db.query(models.AllowedEmailAddress).filter(models.AllowedEmailAddress.email == email.lower()).first()
 
 
 def get_last_submitted_books(db: Session, time_delta: int = 30):

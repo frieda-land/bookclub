@@ -47,14 +47,13 @@
           <h2>{{ username }}</h2>
           <p>{{ email }}</p>
           <img
-            src="/static/images/{{username}}.jpg"
-            alt="Profile Picture"
+            src="https://api.dicebear.com/9.x/notionists/svg?seed={{ username }}"
+            alt="avatar"
             class="profile-pic"
           />
           <hr class="section-divider" />
           <p>Hier findest du eine Übersicht der Wunschkategorien, die du eingereicht hast. </br>
             Ganz unten kannst du weitere Wunschkategorien einreichen.</p>
-            <p><strong color="red">WICHTIG!</strong> </br>Du kannst nur die Wunschkategorien löschen, die noch niemand benutzt hat.</p>
           <div class="submitted-books-section">
             <h2>Wunschkategorien für {{ year }}</h2></br>
             <div id="myCustomCategories"></div>

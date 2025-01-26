@@ -11,22 +11,26 @@ function createTable(data) {
       itemDiv.classList.add("border-item");
     }
     const itemContent = `
-    <strong>${item.owner}</strong> 
-     </br>${item.number_of_books_read} Bücher
-    <button class="toggle-button">Welche?</button>
-    <div class="details" style="display: none;">
-      ${item.books
-        .map(
-          (book) => `
-            <p class="book-name"><strong>${book.book_name}</strong></p>
-            <p class="book-author">von ${book.author}</p>
-            <div class="rating">${generateStarRating(book.rating)}</div>
-            <div class="spacer"></div>
+      <div class="profile">
+        <img
+          src="https://api.dicebear.com/9.x/notionists/svg?seed=${item.owner}"
+          class="profile-pic-thumbnail"
+          alt="Profile Picture"
+        /><br>
+        <strong>${item.owner}</strong>
+      </div>
+      ${item.number_of_books_read} Bücher
+      <button class="toggle-button">Welche?</button>
+      <div class="details" style="display: none;">
+        ${item.books
+          .map(
+            (book) => `
+            <p>${book.book_name} by ${book.author} (Rating: ${book.rating})</p>
           `
-        )
-        .join("")}
-    </div>
-  `;
+          )
+          .join("")}
+      </div>
+    `;
     itemDiv.innerHTML = itemContent;
 
     itemDiv.addEventListener("mouseenter", () => {

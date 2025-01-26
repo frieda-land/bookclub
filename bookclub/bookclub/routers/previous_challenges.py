@@ -6,7 +6,6 @@ from database import get_db
 from fastapi import APIRouter, Depends, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 from models import models
-from pg8000 import DatabaseError
 from requests import Session
 from schemas.schema import SubmittedBook
 from utils.auth import get_current_active_user

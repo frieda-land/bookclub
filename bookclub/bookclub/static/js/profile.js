@@ -19,7 +19,8 @@ function createUsersCustomCategoriesTable(data) {
     const deleteIcon = document.createElement("span");
     deleteIcon.className = "delete-icon";
     deleteIcon.innerHTML = "🗑️"; // Use trash can emoji or icon
-    deleteIcon.title = "Delete this category";
+    deleteIcon.title =
+      "Du kannst nur die Wunschkategorien löschen, die noch niemand benutzt hat.";
 
     deleteIcon.addEventListener("click", () => {
       const url = `/profile/custom_category/${userId}/category/${item}`;

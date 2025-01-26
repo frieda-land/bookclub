@@ -44,12 +44,17 @@
       </header>
       <main>
         <h1>POPSUGAR Reading Challenge</h1>
-        <h2 id="sub-title">Leaderboard 2025</h2>
-        <button id="latestSubmissions" onclick="toggleSubmissions()">Zuletzt eingereicht</button></br>
+        <h2 id="sub-title">Leaderboard {{ year }}</h2>
+        <button id="latestSubmissions" onclick="toggleSubmissions()">Zuletzt eingereicht eingereicht</button></br>
         <div id="submissionsContainer" style="display: none;"></div>
         <div id="tableContainer"></div>
       </main>
     </div>
+    <script>
+      const year = "{{ year }}";
+      localStorage.setItem("year", year);
+      document.getElementById("year-placeholder").textContent = year;
+    </script>
     <script src="/static/js/all-users.js"></script>
     <script src="/static/js/test.js"></script>
     <script src="/static/js/latest-submissions.js"></script>

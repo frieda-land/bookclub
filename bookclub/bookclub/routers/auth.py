@@ -73,10 +73,8 @@ async def auth_google(request: Request, code: str, db: Session = Depends(get_db)
 
     user_google_email = user_info.get("email")
     user_google_name = user_info.get("name")
-    user = db.query(models.User).filter(models.User.email == user_google_email).first()
-    is_allowed_email_address = (
-        db.query(models.AllowedEmailAddress).filter(models.AllowedEmailAddress.email == user_google_email).first()
-    )
+    user = crud.get_user_by_email(db, user_google_email)
+    is_allowed_email_address = crud.is_allowed_email(db, user_google_email)
 
     if not user and is_allowed_email_address:
         try:
@@ -92,7 +90,7 @@ async def auth_google(request: Request, code: str, db: Session = Depends(get_db)
         return RedirectResponse(url="/signup?message=invalid_user")
 
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    access_token = create_access_token(data={"sub": user_google_email}, expires_delta=access_token_expires)
+    access_token = create_access_token(data={"sub": user_google_email.lower()}, expires_delta=access_token_expires)
     response = RedirectResponse(url="/")
 
     response.set_cookie(key="access_token", value=access_token)

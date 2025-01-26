@@ -7,6 +7,9 @@ from schemas.schema import ChallengeCategoryCreate
 def create_single_category(db: Session, category: ChallengeCategoryCreate, user_id=None):
     category_exists = None
     if not category.original_number and user_id:
+        category_exists = crud.get_category_by_title(db, category.title)
+        if category_exists:
+            raise HTTPException(status_code=400, detail="Diese Wunschkategorie gibt es dieses Jahr schon 💡")
         last_category_number = crud.get_latest_number_for_year(db)
         category.original_number = last_category_number + 1
         category.user_id_custom_category = user_id

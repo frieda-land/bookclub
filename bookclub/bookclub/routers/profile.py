@@ -59,7 +59,7 @@ async def profile_custom_category(
                 "username": current_user.username,
                 "year": CURRENT_YEAR,
                 "newsletter_email": current_user.newsletter_email_address,
-                "error": e,
+                "error": e.detail,
             },
         )
     return templates.TemplateResponse(
