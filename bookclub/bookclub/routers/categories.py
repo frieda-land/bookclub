@@ -1,5 +1,5 @@
 from database import get_db
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 from requests import Session
 from schemas.schema import ChallengeCategoryCreate, CreateAllCategoriesResponse
 from utils.categories import advanced_challenges, challenges, create_single_category
@@ -28,13 +28,9 @@ def create_all_categories(db: Session = Depends(get_db), advanced: bool = False)
                     year=key,
                     advanced=advanced,
                 )
-                try:
-                    created_category = create_category(category, db)
-                    created_categories.append(created_category)
-                except HTTPException:
-                    continue
+                created_category = create_category(category, db)
+                created_categories.append(created_category)
     except Exception as e:
-        # TODO add/use logging
         print(e)
         return {
             "status": "Failed",

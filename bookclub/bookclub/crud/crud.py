@@ -33,11 +33,11 @@ def get_categories(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.ChallengeCategory).offset(skip).limit(limit).all()
 
 
-def get_category_by_number(db: Session, category_number: int, year: int = 2025):
+def get_category_by_number(db: Session, original_number: int, year: int = 2025):
     return (
         db.query(models.ChallengeCategory)
         .filter(
-            models.ChallengeCategory.id == category_number,
+            models.ChallengeCategory.id == original_number,
             models.ChallengeCategory.year == year,
         )
         .first()
@@ -83,20 +83,15 @@ def create_challenge_category(db: Session, item: schema.ChallengeCategoryCreate)
     return db_item
 
 
-def get_category_for_user(db: Session, user_id: int, category_number: int):
-    category = get_category_by_number(db, category_number)
-    if not category:
-        # todo handle case
-        pass
-    exists = (
+def get_category_for_user(db: Session, user_id: int, category_id: int):
+    return (
         db.query(models.Association)
         .filter(
-            models.Association.category_id == category.id,
+            models.Association.category_id == category_id,
             models.Association.user_id == user_id,
         )
         .first()
     )
-    return exists
 
 
 def create_entry_for_user(
@@ -107,6 +102,10 @@ def create_entry_for_user(
     submitted_book: schema.SubmittedBook,
 ):
     category_id = get_category_by_original_number(db, original_number, year).id
+    existing_entry = get_category_for_user(db, user_id, category_id)
+    if existing_entry:
+        print("Already exists")
+        return
     db_category = models.Association(
         user_id=user_id,
         category_id=category_id,
@@ -115,7 +114,11 @@ def create_entry_for_user(
         rating=submitted_book.rating,
     )
     db.add(db_category)
-    db.commit()
+    try:
+        db.commit()
+    except Exception as e:
+        db.rollback()
+        raise e
     db.refresh(db_category)
     return db_category
 

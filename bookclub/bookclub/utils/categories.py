@@ -13,7 +13,7 @@ def create_single_category(db: Session, category: ChallengeCategoryCreate, user_
     elif not category.original_number:
         raise HTTPException(status_code=400, detail="Original number is required")
     else:
-        category_exists = crud.get_category_by_number(db, category.original_number, category.year)
+        category_exists = crud.get_category_by_original_number(db, category.original_number, category.year)
     if category_exists:
         raise HTTPException(status_code=400, detail="Category already registered")
     return crud.create_challenge_category(db, category)
@@ -71,6 +71,17 @@ challenges = {
         48: "A collection of at least 24 poems",
         49: "The 24th book of an author",
         50: "A book that starts with the letter 'X'",
+        51: "Ein Buch mit einer Widmung des Autors",
+        52: "Ein Roman mit einem Protagonisten, der wie du selbst heißt (Schreibweise darf abweichen)",
+        53: "Das Siegerbuch eines ausländischen Buchpreises",
+        54: "Ein Buch von dem/der neuen Nobelpreisträger/in",
+        55: "Ein geliehenes Buch",
+        56: "Doppeljoker - eine Kategorie, die du schon hattest, aber dieses Buch passt sooo perfekt dazu",
+        57: "Ein Buch, das über einen Hund geht oder in dem ein Hund vorkommt",
+        58: "Ein Buch, in dem alternative Lebens- bzw. Seinsweisen (Familie, Arbeit, Körper-Geist, Kunst, Wirtschaft, …) dargestellt werden",
+        59: "Ein Buch über eine Kriegerin (im weitesten Sinne)",
+        60: "Ein Comic/ Graphic Novel",
+        61: "Gemeinsames Buch: Echtzeitalter – Tonio Schaching",
     },
     2025: {
         1: "A book about a POC experiencing joy and not trauma",
@@ -128,5 +139,42 @@ advanced_challenges = {
         48: "A book that features a married couple who don't live together",
         49: "A dystopian book with a happy ending",
         50: "A book that features a character with chronic pain",
+    }
+}
+
+submitted_books = {
+    2024: {
+        "me@frieda.dev": [
+            {
+                "author": "Eric Evans",
+                "book_name": "Domain Driven Design",
+                "original_number": 45,
+                "rating": 4,
+            },
+            {
+                "author": "Cheryl Strayed",
+                "book_name": "Tiny Beautiful Things",
+                "original_number": 1,
+                "rating": 4,
+            },
+            {
+                "author": "Tonio Schachinger",
+                "book_name": "Echtzeitalter",
+                "original_number": 61,
+                "rating": 4,
+            },
+            {
+                "author": "James Nestor",
+                "book_name": "Breath",
+                "original_number": 55,
+                "rating": 5,
+            },
+            {
+                "author": "Gene Kim",
+                "book_name": "The Phoenix Project",
+                "original_number": 37,
+                "rating": 4,
+            },
+        ]
     }
 }
