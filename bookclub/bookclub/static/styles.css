@@ -308,6 +308,13 @@ form.signup-form,
   border: 1px dashed red; /* Red dashed border for error messages */
 }
 
+.section-divider-simple {
+  border: 0;
+  height: 2px;
+  margin: 20px auto; /* Spacing around the divider */
+  max-width: 80%; /* Match the sections' width */
+}
+
 .section-divider {
   border: 0;
   height: 2px;
@@ -344,27 +351,25 @@ form.signup-form,
   border-radius: 10px; /* Optional: Add rounded corners */
 }
 
-/* Style for the first three items */
 .grid-item:nth-child(-n + 3) {
-  border: 2px solid rgba(0, 0, 0, 0.2); /* Apply a border */
-  position: relative; /* Ensure pseudo-elements are positioned relative to this container */
+  border: 5px solid #ebc78c;
+  position: relative;
 }
 
-/* Adding the icon using a pseudo-element */
-.grid-item:nth-child(-n + 3)::before {
-  content: "\f091"; /* Font Awesome user icon (replace with any other icon if needed) */
-  font-family: "Font Awesome 5 Free"; /* Make sure Font Awesome is loaded */
-  font-weight: 900; /* Font weight for solid icons */
+/* .grid-item:nth-child(-n + 3)::before {
+  content: "\F08d";
+  font-family: "Font Awesome 5 Free";
+  font-weight: 900;
   position: absolute;
-  top: -10px; /* Adjust as necessary */
-  left: -10px; /* Adjust as necessary */
-  background-color: white; /* Optional: background for the icon */
+  top: -10px;
+  left: -10px;
+  background-color: white;
   border-radius: 50%;
   padding: 5px;
-  color: #fadfa1; /* Adjust color as needed */
-  font-size: 40px; /* Adjust icon size */
-  transform: rotate(-10deg); /* Rotate the icon by 20 degrees */
-}
+  color: #fadfa1;
+  font-size: 40px;
+  transform: rotate(-10deg);
+} */
 
 .profile {
   align-items: center;
@@ -445,7 +450,7 @@ form.signup-form,
 }
 
 .spacer {
-  margin-bottom: 15px; /* Add space after the rating before the next item */
+  margin: 20px auto; /* Spacing around the divider */
 }
 
 #sub-title {
@@ -491,7 +496,7 @@ form.signup-form,
 }
 
 .rating .fas {
-  color: #fadfa1; /* Gold color for full stars */
+  color: #ebc78c; /* Gold color for full stars */
 }
 
 .rating .far {

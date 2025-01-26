@@ -13,7 +13,9 @@ function createTable(data) {
     const itemContent = `
       <div class="profile">
         <img
-          src="https://api.dicebear.com/9.x/notionists/svg?seed=${item.owner}"
+          src="https://api.dicebear.com/9.x/micah/svg?hair=dannyPhantom,dougFunny,full&seed=${
+            item.owner
+          },${item.email}"
           class="profile-pic-thumbnail"
           alt="Profile Picture"
         /><br>
@@ -25,7 +27,13 @@ function createTable(data) {
         ${item.books
           .map(
             (book) => `
-            <p>${book.book_name} by ${book.author} (Rating: ${book.rating})</p>
+            <p class="book-title">${book.original_number}. ${
+              book.category_title
+            }</p>
+            <p class="book-name"><strong>${book.book_name}</strong></p>
+            <p class="book-author">von ${book.author}</p>
+            <div class="rating">${generateStarRating(book.rating)}</div>
+            <div class="section-divider spacer"></div>
           `
           )
           .join("")}

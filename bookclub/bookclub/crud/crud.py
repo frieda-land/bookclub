@@ -165,9 +165,6 @@ def get_books_for_user(db: Session, user_id: str):
 
 def get_books_for_user_for_year(db: Session, user_id: str, year: int):
     user = get_user(db, int(user_id))
-    if not user:
-        # handle
-        pass
     return [challenge for challenge in user.challenge_categories if challenge.challenge_category.year == year]
 
 

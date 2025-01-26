@@ -90,7 +90,7 @@ function createBookCard(text) {
   });
 
   const saveIcon = document.createElement("i");
-  saveIcon.className = "far fa-bookmark save-icon"; // Empty bookmark icon
+  saveIcon.className = "far fa-bookmark save-icon";
   saveIcon.addEventListener("click", () => toggleFavourite(text, saveIcon));
 
   header.appendChild(titleAuthorElement);

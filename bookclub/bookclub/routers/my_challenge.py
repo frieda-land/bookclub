@@ -33,17 +33,18 @@ def submit_book(
     author: str = Form(...),
     book_name: str = Form(...),
     category: str = Form(...),
-    rating: str = Form(...),
+    rating: int = Form(...),
     db: Session = Depends(get_db),
     year: int = CURRENT_YEAR,
 ):
     try:
+        breakpoint()
         crud.create_entry_for_user(
             db,
             int(current_user.id),
             int(category),
             year,
-            SubmittedBook(author=author, name=book_name, rating=int(rating)),
+            SubmittedBook(author=author, name=book_name, rating=rating),
         )
     except Exception:
         print(Exception)

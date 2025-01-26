@@ -14,11 +14,14 @@ def generate_leaderboard(db, year=CURRENT_YEAR):
             {
                 "number_of_books_read": len(users_completed_categories),
                 "owner": user.username,
+                "email": user.email,
                 "books": [
                     {
                         "book_name": item.book_name,
                         "author": item.author,
                         "rating": item.rating,
+                        "original_number": item.challenge_category.original_number,
+                        "category_title": item.challenge_category.title,
                     }
                     for item in users_completed_categories
                 ],

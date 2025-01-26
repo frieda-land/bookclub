@@ -44,13 +44,14 @@
       </header>
       <main>
         <div id="profileContainer">
-          <h2>{{ username }}</h2>
-          <p>{{ email }}</p>
           <img
-            src="https://api.dicebear.com/9.x/notionists/svg?seed={{ username }}"
+            src="https://api.dicebear.com/9.x/micah/svg?hair=dannyPhantom,dougFunny,full&seed={{ username }},{{ email }}"
             alt="avatar"
             class="profile-pic"
           />
+          <hr class="section-divider-simple" />
+          <h2>{{ username }}</h2>
+          <p>{{ email }}</p>
           <hr class="section-divider" />
           <p>Hier findest du eine Übersicht der Wunschkategorien, die du eingereicht hast. </br>
             Ganz unten kannst du weitere Wunschkategorien einreichen.</p>
