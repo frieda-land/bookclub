@@ -38,7 +38,6 @@ def submit_book(
     year: int = CURRENT_YEAR,
 ):
     try:
-        breakpoint()
         crud.create_entry_for_user(
             db,
             int(current_user.id),
