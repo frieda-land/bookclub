@@ -15,7 +15,7 @@ function createTable(data) {
         <img
           src="https://api.dicebear.com/9.x/micah/svg?hair=fonze,pixie,full&seed=${
             item.owner
-          },${item.email}&facialHairProbability=0"
+          },${item.email}&facialHairProbability=0&mouth=smile,laughing,smirk"
           class="profile-pic-thumbnail"
           alt="Profile Picture"
         /><br>
