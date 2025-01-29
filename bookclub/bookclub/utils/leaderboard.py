@@ -8,8 +8,8 @@ def generate_leaderboard(db, year=CURRENT_YEAR):
     all_users = []
     for user in crud.get_users(db):
         users_completed_categories = crud.get_books_for_user_for_year(db, user.id, year)
-        if len(users_completed_categories) == 0:
-            continue
+        # if len(users_completed_categories) == 0:
+        #     continue
         all_users.append(
             {
                 "number_of_books_read": len(users_completed_categories),

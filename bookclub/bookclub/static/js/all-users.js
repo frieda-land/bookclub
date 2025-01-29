@@ -13,9 +13,9 @@ function createTable(data) {
     const itemContent = `
       <div class="profile">
         <img
-          src="https://api.dicebear.com/9.x/micah/svg?hair=dannyPhantom,dougFunny,full&seed=${
+          src="https://api.dicebear.com/9.x/micah/svg?hair=fonze,pixie,full&seed=${
             item.owner
-          },${item.email}"
+          },${item.email}&facialHairProbability=0"
           class="profile-pic-thumbnail"
           alt="Profile Picture"
         /><br>
