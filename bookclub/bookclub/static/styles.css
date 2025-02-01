@@ -643,3 +643,17 @@ button.loading::after {
   content: "...";
   animation: blink 1s infinite;
 }
+
+.books-read {
+  margin-top: 30px;
+  margin-bottom: 10px;
+  font-size: 18px;
+  color: #333;
+  text-align: center;
+}
+
+.books-read-number {
+  font-size: 25px !important;
+  font-weight: bold;
+  color: #7eacb5;
+}

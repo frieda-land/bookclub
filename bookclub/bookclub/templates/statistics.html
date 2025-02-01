@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Successfully Logged In</title>
+    <title>Challenge</title>
     <link rel="stylesheet" href="/static/styles.css" />
     <link rel="icon" type="image/png" href="/static/images/bookclub-logo.jpg" />
     <link
@@ -18,6 +18,7 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
       rel="stylesheet"
     />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/charts.css/dist/charts.min.css">
   </head>
 
   <body>
@@ -47,24 +48,31 @@
               >
             </li>
             <li><a href="/bookmarks">Bookmarked</a></li>
-            <li><a href="/statistics">Statistik</a></li>
-            <li><a href="/profile">Profile</a></li>
             <li><a href="/logout">Logout</a></li>
           </ul>
         </nav>
       </header>
       <main>
-        <h1>POPSUGAR Reading Challenge</h1>
-        <p id="sub-title">Leaderboard <span id="year-placeholder"></span></p>
-        <div id="tableContainer"></div>
+        <div id="profileContainer">
+          <div>
+            <canvas id="myChart" height="400"></canvas>
+          </div>
+          <hr class="section-divider" />
+          <div class="books-read">
+            <span class="books-read-number">
+              {% for reader in readers_of_the_month %}
+                {{ reader.user }} hat {{reader.number_of_books_read }} Bücher gelesen
+              {% endfor %}
+            </span>
+          </div>
+          Leser:in(nen) mit den meisten gelesenen Büchern der letzten 30 Tage
+        </div>
       </main>
-    </div>
-    <script>
-      const year = "{{ year }}";
-      localStorage.setItem("year", year);
-      document.getElementById("year-placeholder").textContent = year;
-    </script>
-    <script src="/static/js/all-users.js" data-fetch="true"></script>
-    <script src="/static/js/test.js"></script>
   </body>
+  <script>
+        const chartData = JSON.parse('{{ chartData | safe }}');
+</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+  <script src="/static/js/test.js"></script>
+  <script src="/static/js/statistics.js"></script>
 </html>

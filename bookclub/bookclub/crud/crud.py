@@ -1,4 +1,6 @@
+import json
 from datetime import datetime, timedelta
+from typing import List
 
 from models import models
 from schemas import schema
@@ -341,3 +343,55 @@ def get_reader_of_the_month(db: Session):
         elif amount == current_max:
             all_readers_of_the_month.append(schema.ReaderOfTheMonth(user=user.username, number_of_books_read=amount))
     return all_readers_of_the_month
+
+
+month_names = [
+    "Januar",
+    "Februar",
+    "März",
+    "April",
+    "Mai",
+    "Juni",
+    "Juli",
+    "August",
+    "September",
+    "Oktober",
+    "November",
+    "Dezember",
+]
+
+
+def get_last_months(number_of_months: int):
+    current_month = datetime.now().month
+    current = current_month
+    months = []
+    while current > 0:
+        months.append(current)
+        current -= 1
+    if len(months) != number_of_months:
+        current = 12
+        while len(months) < number_of_months:
+            months.append(current)
+            current -= 1
+    month_buckets = {}
+    months.reverse()
+    for m in months:
+        month_buckets[month_names[m - 1]] = 0
+    return month_buckets
+
+
+def fill_monthly_buckets(books: List[models.Association]):
+    monthly_buckets = get_last_months(6)
+    for book in books:
+        month = month_names[book.created_at.month - 1]
+        monthly_buckets[month] += 1
+    return monthly_buckets
+
+
+def get_statistics(db: Session):
+    books_last_6_months = get_last_submitted_books(db, 180)
+    monthly_buckets = fill_monthly_buckets(books_last_6_months)
+    return {
+        "months": list(monthly_buckets.keys()),
+        "data": list(monthly_buckets.values()),
+    }

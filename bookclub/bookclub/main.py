@@ -7,7 +7,17 @@ from database import engine, get_db
 from fastapi import Depends, FastAPI
 from fastapi.staticfiles import StaticFiles
 from requests import Session
-from routers import ai_recommendations, auth, bookmarks, categories, home, my_challenge, previous_challenges, profile
+from routers import (
+    ai_recommendations,
+    auth,
+    bookmarks,
+    categories,
+    home,
+    my_challenge,
+    previous_challenges,
+    profile,
+    statistics,
+)
 from utils.email import send_monthly_newsletter
 
 models.Base.metadata.create_all(bind=engine)
@@ -39,5 +49,16 @@ app.include_router(bookmarks.router)
 app.include_router(categories.router)
 app.include_router(previous_challenges.router)
 app.include_router(profile.router)
+app.include_router(statistics.router)
+
+app.mount("/static", StaticFiles(directory="static"), name="static")
+app.include_router(ai_recommendations.router)
+app.include_router(auth.router)
+app.include_router(my_challenge.router)
+app.include_router(bookmarks.router)
+app.include_router(categories.router)
+app.include_router(previous_challenges.router)
+app.include_router(profile.router)
+app.include_router(statistics.router)
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
