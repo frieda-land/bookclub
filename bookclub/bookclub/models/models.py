@@ -1,11 +1,9 @@
 from datetime import datetime, timezone
 from typing import List
 
+from database import Base
 from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, String
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-
-Base = declarative_base()
 
 
 class GroupMembership(Base):
@@ -24,7 +22,8 @@ class Association(Base):
 
     user_id: Mapped[int] = mapped_column(ForeignKey("user.id"), primary_key=True)
     category_id: Mapped[int] = mapped_column(ForeignKey("challenge_category.id"), primary_key=True)
-    book_name: Mapped[str] = mapped_column(String, unique=True)
+    book_name: Mapped[str] = mapped_column(String)
+    isbn: Mapped[str] = mapped_column(String, nullable=True)
     author: Mapped[str] = mapped_column(String, nullable=False)
     rating: Mapped[int] = mapped_column(Integer, nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now(tz=timezone.utc), index=True)
