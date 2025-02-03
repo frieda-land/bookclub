@@ -31,7 +31,10 @@ function createTable(data) {
               book.category_title
             }</p>
             <p class="book-name"><strong>${book.book_name}</strong></p>
-            <p class="book-author">von ${book.author}</p>
+            <p class="book-author">${book.author}</p>
+            <img src="https://storage.googleapis.com/shelfie-public-pictures/bookcovers/${
+              book.book_name
+            }-${book.author}.jpg" alt="Cover" class="book-cover">
             <div class="rating">${generateStarRating(book.rating)}</div>
             <div class="section-divider spacer"></div>
           `

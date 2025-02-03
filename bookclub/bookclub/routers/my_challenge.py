@@ -3,7 +3,7 @@ from typing import Annotated
 from config import templates
 from crud import crud
 from database import get_db
-from fastapi import APIRouter, Depends, Form, Request
+from fastapi import APIRouter, Depends, File, Form, Request, UploadFile
 from fastapi.responses import HTMLResponse, RedirectResponse
 from models import models
 from requests import Session
@@ -34,6 +34,7 @@ def submit_book(
     book_name: str = Form(...),
     category: str = Form(...),
     rating: int = Form(...),
+    file: UploadFile = File(...),
     db: Session = Depends(get_db),
     year: int = CURRENT_YEAR,
 ):
@@ -45,6 +46,7 @@ def submit_book(
             year,
             SubmittedBook(author=author, name=book_name, rating=rating),
         )
+        crud.upload_bookcover(db, file, book_name, author)
     except Exception:
         print(Exception)
         return templates.TemplateResponse(

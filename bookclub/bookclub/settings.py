@@ -22,6 +22,7 @@ class Settings(BaseSettings):
     DB_NAME: str = os.getenv("DB_NAME")
     DB_USER: str = os.getenv("DB_USER")
     DB_PASS: str = os.getenv("DB_PASS")
+    GCLOUD_PICTURE_BUCKET: str = "shelfie-public-pictures"
 
     class Config:
         env_file = ".env"

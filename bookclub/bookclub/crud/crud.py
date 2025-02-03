@@ -1,13 +1,17 @@
-import json
+import io
 from datetime import datetime, timedelta
 from typing import List
 
+from fastapi import UploadFile
+from google.cloud import storage
 from models import models
+from PIL import Image
 from schemas import schema
 from settings import settings
 from sqlalchemy.orm import Session
 
 CURRENT_YEAR = settings.CURRENT_YEAR
+BUCKET_NAME = settings.GCLOUD_PICTURE_BUCKET
 
 
 def get_user(db: Session, user_id: int):
@@ -395,3 +399,19 @@ def get_statistics(db: Session):
         "months": list(monthly_buckets.keys()),
         "data": list(monthly_buckets.values()),
     }
+
+
+def upload_bookcover(db: Session, file_wrapper: UploadFile, book_name: str, author: str):
+    storage_client = storage.Client()
+    bucket = storage_client.bucket(BUCKET_NAME)
+
+    blob = bucket.blob(f"bookcovers/{book_name}-{author}.jpg")
+
+    image = Image.open(file_wrapper.file)
+    compressed_image_io = io.BytesIO()
+    image.save(compressed_image_io, format="JPEG", quality=70)
+    compressed_image_io.seek(0)
+
+    blob.upload_from_file(compressed_image_io, content_type="image/jpeg")
+
+    return blob.public_url

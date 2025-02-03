@@ -404,8 +404,8 @@ form.signup-form,
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   background-color: #f9f9f9;
   flex: 1; /* Allow boxes to grow and fill the container */
-  max-width: 500px; /* Set a maximum width for the boxes */
-  background-size: cover; /* Ensure the background image covers the box */
+  max-width: 500px;
+  background-size: cover;
   background-position: center; /* Center the background image */
   color: #333; /* Ensure text is readable on the background image */
   height: 300px; /* Set a specific height for the boxes */
@@ -447,6 +447,55 @@ form.signup-form,
 .book-name,
 .rating {
   margin: 4px 0; /* Reduce the margin to decrease the space between elements */
+}
+
+.book-name {
+  font-size: 30px;
+}
+
+.book-author {
+  margin-bottom: 10px;
+}
+
+.rating {
+  margin-top: 10px;
+  font-size: 25px;
+}
+
+.book-cover {
+  width: 170px; /* Adjust the width as needed */
+  height: auto; /* Maintain aspect ratio */
+  border-radius: 5px; /* Add rounded corners */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Add shadow for depth */
+}
+
+.file-upload-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px; /* Space between the button and the next element */
+}
+
+.custom-file-upload {
+  display: inline-block;
+  padding: 10px 20px;
+  cursor: pointer;
+  background-color: #1f456e; /* Button background color */
+  color: white !important; /* Button text color */
+  border: none; /* Remove default border */
+  border-radius: 5px; /* Add border radius */
+  font-size: 16px; /* Font size */
+  text-align: center; /* Center the text */
+  margin-bottom: 10px; /* Space between button and file name */
+}
+
+.custom-file-upload:hover {
+  background-color: #7eacb5; /* Change background color on hover */
+}
+
+#file-upload-filename {
+  font-size: 14px;
+  color: #666;
 }
 
 .spacer {

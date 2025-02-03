@@ -20,6 +20,7 @@ def generate_leaderboard(db, year=CURRENT_YEAR):
                         "book_name": item.book_name,
                         "author": item.author,
                         "rating": item.rating,
+                        "isbn": item.isbn,
                         "original_number": item.challenge_category.original_number,
                         "category_title": item.challenge_category.title,
                     }

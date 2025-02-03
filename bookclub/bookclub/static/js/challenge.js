@@ -96,9 +96,6 @@ document
     const userId = localStorage.getItem("userId");
 
     let actionUrl = form.action;
-    if (actionUrl.startsWith("http:")) {
-      actionUrl = actionUrl.replace("http:", "https:");
-    }
     // Needed see https://stackoverflow.com/questions/63511413/fastapi-redirection-for-trailing-slash-returns-non-ssl-link
     fetch(`${actionUrl}/`, {
       method: "POST",

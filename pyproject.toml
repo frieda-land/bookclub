@@ -28,6 +28,9 @@ pydantic-settings = "^2.7.1"
 python-multipart = "^0.0.20"
 pg8000 = "^1.31.2"
 cloud-sql-python-connector = "^1.16.0"
+google-cloud-storage = "^3.0.0"
+google-auth = "^2.38.0"
+pillow = "^11.1.0"
 
 
 [build-system]
