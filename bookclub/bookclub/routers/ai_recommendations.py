@@ -54,9 +54,13 @@ async def post_recommendations(
     category: str = Form(...),
     original_language: str = Form(...),
     additional_info: str = Form(None),
+    db: Session = Depends(get_db),
 ):
     async def recommendation_generator():
-        async for recommendation in generate_recommendations_for_category(category, original_language, additional_info):
+        cat_title = crud.get_category_by_original_number(db, int(category)).title
+        async for recommendation in generate_recommendations_for_category(
+            cat_title, original_language, additional_info
+        ):
             yield recommendation
 
     return StreamingResponse(recommendation_generator(), media_type="text/plain")

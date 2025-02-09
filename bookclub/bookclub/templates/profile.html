@@ -60,7 +60,10 @@
             <h2>Wunschkategorien für {{ year }}</h2></br>
             <div id="myCustomCategories"></div>
           </div>
-          <h2>Trophäen</h2>
+          <div>
+            <h2 class="trophy-h2">Trophäen</h2>
+            <div id="trophies-container" class="trophies"></div>
+          </div>
             <hr class="section-divider" />  
             <h2>Monatlichen Newsletter abonnieren</h2>
             <p></br>Erhalte monatlich unseren Newsletter mit dem neuesten Stand </br>des Leaderboards und bald auch monatlichen Trophäen.</p>
@@ -95,6 +98,8 @@
     <script>
       const newsletter_email = "{{ newsletter_email }}";
       localStorage.setItem("newsletterEmail", newsletter_email);
+      const trophies = encodeURIComponent('{{ trophies|tojson|safe }}');
+      localStorage.setItem("trophies", trophies);
     </script>
     <script src="/static/js/test.js"></script>
     <script src="/static/js/profile.js"></script>

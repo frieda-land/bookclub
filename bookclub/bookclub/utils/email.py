@@ -2,10 +2,12 @@ import locale
 from datetime import datetime
 
 from crud import crud
+from database import engine
 from jinja2 import Environment, FileSystemLoader
 from schemas.schema import NewsletterUser
 from sendgrid import Mail, SendGridAPIClient
 from settings import settings
+from sqlalchemy.orm import sessionmaker
 from utils.leaderboard import generate_leaderboard
 
 EMAIL_ADMIN = settings.EMAIL_ADMIN
@@ -13,7 +15,9 @@ TWILLIO_KEY = settings.TWILLIO_KEY
 
 
 # Todo create proper Email service
-def send_monthly_newsletter(db):
+def send_monthly_newsletter():
+    SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+    db = SessionLocal()
     try:
         subscribers = crud.get_newsletter_subscribers(db)
         email_addresses = [
@@ -26,7 +30,7 @@ def send_monthly_newsletter(db):
         ]
         leaderboard = generate_leaderboard(db)
         books_last_30_days = crud.get_last_submitted_books(db)
-        readers_of_the_month = crud.get_reader_of_the_month(db)
+        readers_of_the_month = crud.get_reader_of_last_30_days(db)
         for email in email_addresses:
             locale.setlocale(locale.LC_TIME, "de_DE.UTF-8")
             context = {
@@ -75,7 +79,7 @@ def inform_user_about_signup(email: str):
     html = template.render(context)
     try:
         send_email("Welcome to BookClub", html, email)
-    except Exception as e:
+    except Exception:
         # todo add exponential backoff
         return
 

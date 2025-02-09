@@ -1,6 +1,7 @@
 from datetime import datetime
 from typing import List
 
+from models.models import TrophyType
 from pydantic import BaseModel
 
 
@@ -53,6 +54,11 @@ class ReaderOfTheMonth(BaseModel):
     number_of_books_read: int
 
 
+class TrophyReaderUserId(BaseModel):
+    user_id: int
+    number_of_books_read: int
+
+
 class GroupBase(BaseModel):
     name: str
     description: str
@@ -100,3 +106,11 @@ class SubmittedBookWithUsername(SubmittedBook):
 
 class AllowedEmailCreate(BaseModel):
     email: str
+
+
+class TrophyCreate(BaseModel):
+    kind: TrophyType
+    year: int
+    number_of_books_read: int
+    user_id: int | None = None
+    month: int | None = None

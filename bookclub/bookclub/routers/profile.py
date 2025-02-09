@@ -1,3 +1,4 @@
+import json
 from typing import Annotated
 
 from config import templates
@@ -26,6 +27,21 @@ async def profile(
 ):
     if isinstance(current_user, RedirectResponse):
         return current_user
+    trophies = {
+        "monthly": [],
+        "yearly": [],
+    }
+    for trophy in current_user.trophies:
+        if trophy.kind == models.TrophyType.MONTHLY:
+            trophies["monthly"].append(
+                {
+                    "year": trophy.year,
+                    "month": crud.month_names[trophy.month - 1],
+                    "number_of_books_read": trophy.number_of_books_read,
+                }
+            )
+        else:
+            trophies["yearly"].append({"year": trophy.year, "number_of_books_read": trophy.number_of_books_read})
     return templates.TemplateResponse(
         request=request,
         name="profile.html",
@@ -35,6 +51,7 @@ async def profile(
             "username": current_user.username,
             "year": CURRENT_YEAR,
             "newsletter_email": current_user.newsletter_email_address,
+            "trophies": trophies,
         },
     )
 

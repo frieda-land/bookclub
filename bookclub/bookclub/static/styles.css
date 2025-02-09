@@ -54,7 +54,6 @@ button:hover {
   color: black;
 }
 
-/* Login Page Styling */
 .login-container {
   background-color: white;
   border-radius: 20px;
@@ -705,4 +704,40 @@ button.loading::after {
   font-size: 25px !important;
   font-weight: bold;
   color: #7eacb5;
+}
+
+.trophies {
+  display: flex;
+  flex-direction: column;
+}
+
+.trophy-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.trophy {
+  flex: 1;
+  text-align: center;
+}
+
+.trophy img {
+  max-width: 200px;
+}
+
+.trophy-h2 {
+  margin-bottom: 50px;
+  margin-top: 40px;
+}
+
+.trophy p {
+  margin-bottom: 5px;
+}
+
+/* Media query for mobile devices */
+@media (max-width: 600px) {
+  .trophy-row {
+    flex-direction: column;
+  }
 }

@@ -49,7 +49,6 @@ function createUsersCustomCategoriesTable(data) {
 }
 
 function fetchCustomCategories() {
-  // Replace the URL with your backend API endpoint
   const apiUrl = `/profile/custom_category/${localStorage.getItem("userId")}`;
 
   fetch(apiUrl, {
@@ -68,13 +67,57 @@ fetchCustomCategories();
 
 document.addEventListener("DOMContentLoaded", function () {
   const newsletterEmail = localStorage.getItem("newsletterEmail");
-  console.log(newsletterEmail);
   if (newsletterEmail && newsletterEmail !== "None") {
     document.getElementById("newsletterForm").style.display = "none";
     document.getElementById("unsubscribeButton").style.display = "block";
   } else {
     document.getElementById("newsletterForm").style.display = "block";
     document.getElementById("unsubscribeButton").style.display = "none";
+  }
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+  const container = document.getElementById("trophies-container");
+  const encodedTrophies = localStorage.getItem("trophies");
+  if (encodedTrophies) {
+    const decodedTrophies = decodeURIComponent(encodedTrophies);
+    const trophies = JSON.parse(decodedTrophies);
+    if (
+      (trophies.monthly && trophies.monthly.length > 0) ||
+      (trophies.yearly && trophies.yearly.length > 0)
+    ) {
+      let row;
+      trophies.monthly.forEach((trophy, index) => {
+        if (index % 3 === 0) {
+          row = document.createElement("div");
+          row.className = "trophy-row";
+          container.appendChild(row);
+        }
+        const trophyDiv = document.createElement("div");
+        trophyDiv.className = "trophy";
+        trophyDiv.innerHTML = `
+          <img src="/static/images/month.png" alt="trophy" />
+          <p><strong>Leser:in des Monats<br> ${trophy.month}</strong> </p>
+          <p>(${trophy.number_of_books_read} Bücher)</p>
+        `;
+        row.appendChild(trophyDiv);
+      });
+      trophies.year.forEach((trophy, index) => {
+        if (index % 3 === 0) {
+          row = document.createElement("div");
+          row.className = "trophy-row";
+          container.appendChild(row);
+        }
+        const trophyDiv = document.createElement("div");
+        trophyDiv.className = "trophy";
+        trophyDiv.innerHTML = `
+          <img src="/static/images/year.png" alt="trophy" />
+          <p><strong>Popsugar Gewinnerin des Jahres ${trophy.year}</strong> </p>
+          <p>(${trophy.number_of_books_read} Bücher)</p>
+        `;
+        row.appendChild(trophyDiv);
+      });
+    }
   }
 });
 

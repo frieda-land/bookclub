@@ -332,7 +332,56 @@ def get_last_submitted_books(db: Session, time_delta: int = 30):
     return db.query(models.Association).filter(models.Association.created_at > checkpoint).all()
 
 
-def get_reader_of_the_month(db: Session):
+def get_books_of_month(month: int, year: int, db: Session):
+    return db.query(models.Association).filter(models.Association.created_at >= datetime(year, month, 1)).all()
+
+
+def get_books_of_year(year: int, db: Session):
+    return db.query(models.Association).filter(models.Association.created_at >= datetime(year, 1, 1)).all()
+
+
+# todo reafactor into one method
+def get_reader_of_the_month(month: int, year: int, db: Session) -> List[schema.TrophyReaderUserId | None]:
+    all_readers_of_the_month = {}
+    all_books_of_the_month = get_books_of_month(month, year, db)
+    for book in all_books_of_the_month:
+        if book.user_id not in all_readers_of_the_month:
+            all_readers_of_the_month[book.user_id] = 1
+        else:
+            all_readers_of_the_month[book.user_id] += 1
+    current_max = 0
+    readers_of_the_month = []
+    for user_id, books_read in all_readers_of_the_month.items():
+        if books_read > current_max:
+            readers_of_the_month = []
+            readers_of_the_month.append(schema.TrophyReaderUserId(user_id=user_id, number_of_books_read=books_read))
+            current_max = books_read
+        elif books_read == current_max:
+            readers_of_the_month.append(schema.TrophyReaderUserId(user_id=user_id, number_of_books_read=books_read))
+    return readers_of_the_month
+
+
+def get_reader_of_the_year(year: int, db: Session) -> List[schema.TrophyReaderUserId | None]:
+    all_readers_of_the_month = {}
+    all_books_of_the_month = get_books_of_year(year, db)
+    for book in all_books_of_the_month:
+        if book.user_id not in all_readers_of_the_month:
+            all_readers_of_the_month[book.user_id] = 1
+        else:
+            all_readers_of_the_month[book.user_id] += 1
+    current_max = 0
+    readers_of_the_month = []
+    for user_id, books_read in all_readers_of_the_month.items():
+        if books_read > current_max:
+            readers_of_the_month = []
+            readers_of_the_month.append(schema.TrophyReaderUserId(user_id=user_id, number_of_books_read=books_read))
+            current_max = books_read
+        elif books_read == current_max:
+            readers_of_the_month.append(schema.TrophyReaderUserId(user_id=user_id, number_of_books_read=books_read))
+    return readers_of_the_month
+
+
+def get_reader_of_last_30_days(db: Session):
     all_readers_of_the_month = []
     current_max = 0
     for user in get_users(db):
@@ -415,3 +464,17 @@ def upload_bookcover(db: Session, file_wrapper: UploadFile, book_name: str, auth
     blob.upload_from_file(compressed_image_io, content_type="image/jpeg")
 
     return blob.public_url
+
+
+def create_trophy(db: Session, tropy: schema.TrophyCreate):
+    db_trophy = models.Trophy(
+        user_id=tropy.user_id,
+        kind=tropy.kind,
+        month=tropy.month,
+        year=tropy.year,
+        number_of_books_read=tropy.number_of_books_read,
+    )
+    db.add(db_trophy)
+    db.commit()
+    db.refresh(db_trophy)
+    return db_trophy

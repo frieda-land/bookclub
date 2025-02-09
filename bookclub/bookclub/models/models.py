@@ -1,9 +1,15 @@
+import enum
 from datetime import datetime, timezone
 from typing import List
 
 from database import Base
-from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, String
+from sqlalchemy import Boolean, DateTime, Enum, ForeignKey, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+
+
+class TrophyType(enum.Enum):
+    MONTHLY = "monthly"
+    YEARLY = "yearly"
 
 
 class GroupMembership(Base):
@@ -42,6 +48,7 @@ class User(Base):
     newsletter_email_address: Mapped[str] = mapped_column(String, nullable=True)
     group_memberships: Mapped[List["GroupMembership"]] = relationship(back_populates="user")
     challenge_categories: Mapped[List["Association"]] = relationship(back_populates="user")
+    trophies: Mapped[List["Trophy"]] = relationship("Trophy", back_populates="user")
 
 
 class BookmarkedRecommendations(Base):
@@ -84,3 +91,16 @@ class AllowedEmailAddress(Base):
     email: Mapped[str] = mapped_column(String, unique=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now(tz=timezone.utc))
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
+
+
+class Trophy(Base):
+    __tablename__ = "trophy"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    kind: Mapped[enum.Enum] = mapped_column(Enum(TrophyType))
+    month: Mapped[int] = mapped_column(Integer, nullable=True)
+    year: Mapped[int] = mapped_column(Integer)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now(tz=timezone.utc))
+    number_of_books_read: Mapped[int] = mapped_column(Integer)
+    user_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
+    user: Mapped["User"] = relationship("User", back_populates="trophies")

@@ -11,7 +11,7 @@ router = APIRouter(prefix="/statistics", tags=["statistics"])
 @router.get("/")
 def statistics(request: Request, db=Depends(get_db)):
     chart_data = crud.get_statistics(db)
-    readers_of_the_month = crud.get_reader_of_the_month(db)
+    readers_of_the_month = crud.get_reader_of_last_30_days(db)
     return templates.TemplateResponse(
         "statistics.html",
         {
