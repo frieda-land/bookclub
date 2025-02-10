@@ -8,12 +8,13 @@ function createUsersCustomCategoriesTable(data) {
   data.forEach((item, index) => {
     const itemDiv = document.createElement("div");
 
-    const itemContent = `
+    const itemContent = ` 
     <div class="item-content">
       <p><span class="label">Kategorie:</span> ${item.category_id}</p>
       <p><span class="label label-title">${item.title}</span></p>
       <p><span class="label"></span> <strong>${item.book_name}</strong> von <span class="label"></span> <strong>${item.author}</strong></p>
-    </div>
+        <button class="shareButton" id="shareBtn" category="${item.category_id}: ${item.title}" book-name="${item.book_name}" author="${item.author}" data-image-url="https://storage.googleapis.com/shelfie-public-pictures/bookcovers/${item.book_name}-${item.author}.jpg">share</button>  
+      </div>
   `;
     itemDiv.innerHTML = itemContent;
     container.appendChild(itemDiv);
@@ -117,3 +118,33 @@ document
   });
 
 fetchChallengeData();
+
+document.addEventListener("click", async (event) => {
+  if (event.target && event.target.id === "shareBtn") {
+    if (navigator.share) {
+      const bookName = event.target.getAttribute("book-name");
+      const author = event.target.getAttribute("author");
+      const category = event.target.getAttribute("category");
+      const response = await fetch(
+        event.target.getAttribute("data-image-url"),
+        { mode: "cors" }
+      );
+      const blob = await response.blob();
+      const file = new File([blob], "bookcover.jpg", { type: blob.type });
+      await navigator
+        .share({
+          title: "Shelfie Update",
+          text: `✨ Kategorie ${category} ✨ "${bookName}" von ${author} 📚🙌`,
+          files: [file],
+        })
+        .then(() => {
+          console.log("Thanks for sharing!");
+        })
+        .catch((err) => console.error(err));
+    } else {
+      alert(
+        "The current browser does not support the share function. Please, manually share the link"
+      );
+    }
+  }
+});

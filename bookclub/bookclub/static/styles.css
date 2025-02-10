@@ -54,6 +54,10 @@ button:hover {
   color: black;
 }
 
+.shareButton {
+  width: 50%;
+}
+
 .login-container {
   background-color: white;
   border-radius: 20px;
