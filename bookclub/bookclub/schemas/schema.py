@@ -35,6 +35,11 @@ class UserCreate(UserBase):
     pass
 
 
+class UserGroupUpdate(BaseModel):
+    group_id: int
+    user_id: int
+
+
 class User(UserBase):
     id: int
     created_at: datetime
@@ -62,7 +67,8 @@ class TrophyReaderUserId(BaseModel):
 class GroupBase(BaseModel):
     name: str
     description: str
-    created_at: datetime
+    challenge_id: int
+    admin_id: int | None = None
 
 
 class GroupCreate(GroupBase):
@@ -106,6 +112,7 @@ class SubmittedBookWithUsername(SubmittedBook):
 
 class AllowedEmailCreate(BaseModel):
     email: str
+    is_admin_request_for_group_id: int | None = None
 
 
 class TrophyCreate(BaseModel):

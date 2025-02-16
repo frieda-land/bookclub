@@ -30,6 +30,7 @@ jobstores = {"default": MemoryJobStore()}
 scheduler = AsyncIOScheduler(jobstores=jobstores, timezone="Europe/Berlin")
 
 
+# fix apscheduler which did not run
 @scheduler.scheduled_job("cron", month="1-12", day=15, hour=9, minute=5)
 def newsletter_scheduler():
     send_monthly_newsletter()

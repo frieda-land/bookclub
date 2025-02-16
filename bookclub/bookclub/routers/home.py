@@ -7,6 +7,7 @@ from fastapi import APIRouter, Depends, Form, Query, Request
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 from models import models
 from requests import Session
+from schemas.schema import AllowedEmailCreate, GroupCreate
 from settings import settings
 from utils.auth import get_current_active_user
 from utils.email import send_email
@@ -33,6 +34,36 @@ async def logout(request: Request):
 @router.get("/signup", response_class=HTMLResponse)
 async def signup(request: Request):
     return templates.TemplateResponse(request=request, name="signup.html")
+
+
+@router.get("/create_group", response_class=HTMLResponse)
+async def create_group(request: Request):
+    return templates.TemplateResponse(request=request, name="create_group.html")
+
+
+@router.post("/create_group", response_class=JSONResponse)
+async def create_group_request(
+    request: Request,
+    group_name: str = Form(...),
+    email: str = Form(...),
+    description: str = Form(None),
+    challenge: str = Form(...),
+    db: Session = Depends(get_db),
+):
+    challenge = crud.get_challenge_by_name(db, challenge)
+    group = crud.create_group(
+        db,
+        group=GroupCreate(
+            name=group_name,
+            description=description,
+            challenge_id=challenge.id,
+        ),
+    )
+    crud.create_allowed_email(db, AllowedEmailCreate(email=email, is_admin_request_for_group_id=group.id))
+    return JSONResponse(
+        content={"message": "Group created, please login!"},
+        status_code=201,
+    )
 
 
 @router.post("/signup", response_class=JSONResponse)

@@ -312,7 +312,10 @@ def get_newsletter_subscribers(db: Session):
 
 
 def create_allowed_email(db: Session, allowed_email: schema.AllowedEmailCreate):
-    allowed_email = models.AllowedEmailAddress(email=allowed_email.email.lower())
+    allowed_email = models.AllowedEmailAddress(
+        email=allowed_email.email.lower().strip(),
+        is_admin_request_for_group_id=allowed_email.is_admin_request_for_group_id,
+    )
     db.add(allowed_email)
     try:
         db.commit()
@@ -478,3 +481,42 @@ def create_trophy(db: Session, tropy: schema.TrophyCreate):
     db.commit()
     db.refresh(db_trophy)
     return db_trophy
+
+
+def get_challenge_by_name(db: Session, name: str):
+    return db.query(models.Challenge).filter(models.Challenge.name == name).first()
+
+
+def create_group(db: Session, group: schema.GroupCreate):
+    db_group = models.Group(
+        name=group.name,
+        description=group.description,
+        challenge_id=group.challenge_id,
+        admin_id=group.admin_id,
+    )
+    db.add(db_group)
+    db.commit()
+    db.refresh(db_group)
+    return db_group
+
+
+def update_group_membership_default(db: Session, group_id: int, user_id: int, is_default: bool = False):
+    db.query(models.GroupMembership).filter(models.GroupMembership.user_id == user_id).update(
+        {"is_default_group": is_default}
+    )
+    db.commit()
+
+
+def create_group_membership(db: Session, group: schema.UserGroupUpdate):
+    update_group_membership_default(db, group.group_id, group.user_id)
+    db_membership = models.GroupMembership(group_id=group.group_id, user_id=group.user_id, is_default_group=True)
+    db.add(db_membership)
+    db.commit()
+    db.refresh(db_membership)
+    return db_membership
+
+
+def update_group_admin(db: Session, group_id: int, admin_id: int):
+    db.query(models.Group).filter(models.Group.id == group_id).update({"admin_id": admin_id})
+    db.commit()
+    return db.query(models.Group).filter(models.Group.id == group_id).first()

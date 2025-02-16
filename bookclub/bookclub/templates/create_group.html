@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/png" href="/static/images/bookclub-logo.jpg" />
+    <title>Create Group</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="logged-in-container">
+      <header>
+        <div class="logo-container">
+          <img src="/static/images/bookclub-logo.jpg" alt="Logo" class="logo" />
+        </div>
+        <div class="burger-menu" onclick="toggleMenu()">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+        <nav id="nav-menu">
+          <ul>
+            <li><a href="/login">Login</a></li>
+          </ul>
+        </nav>
+      </header>
+      <main>
+        <h2>Create new group</h2>
+        {% if request.query_params.get('message') == 'invalid_user' %}
+        <p class="error-message">Invalid user. Please sign up first.</p>
+        {% endif %}
+        <form
+          id="signupForm"
+          action="/create_group"
+          method="POST"
+          class="signup-form"
+        >
+          <div class="form-group">
+            <label for="group_name">Group Name:*</label>
+            <input
+              type="group_name"
+              id="group_name"
+              name="group_name"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="email">Email Admin:*</label>
+            <input type="email" id="email" name="email" required />
+          </div>
+          <div class="form-group">
+            <label for="description">Description:*</label>
+            <textarea
+              type="description"
+              id="description"
+              name="description"
+            ></textarea>
+          </div>
+          <div class="form-group">
+            <label for="challenge">Challenge:*</label>
+            <select id="challenge" name="challenge" required>
+              <option value="Popsugar 2025">Popsugar 2025</option>
+            </select>
+          </div>
+          <button type="submit">Create Group</button>
+        </form>
+        <div
+          id="messageContainer"
+          class="message-container"
+          style="display: none; margin-top: 20px"
+        ></div>
+      </main>
+    </div>
+    <script src="/static/js/signup.js"></script>
+    <script src="/static/js/test.js"></script>
+  </body>
+</html>

@@ -12,7 +12,8 @@ class Settings(BaseSettings):
     AUTHORIZE_URL_GOOGLE: str = "https://accounts.google.com/o/oauth2/auth"
     GOOGLE_CLIENT_ID: str = os.getenv("GOOGLE_CLIENT_ID")
     GOOGLE_CLIENT_SECRET: str = os.getenv("GOOGLE_CLIENT_SECRET")
-    GOOGLE_REDIRECT_URI: str = "https://shelfie.frieda.dev/auth/google"
+    # GOOGLE_REDIRECT_URI: str = "https://shelfie.frieda.dev/auth/google"
+    GOOGLE_REDIRECT_URI: str = "http://localhost:8080/auth/google"
     GOOGLE_USER_INFO_URL: str = "https://www.googleapis.com/oauth2/v1/userinfo"
     EMAIL_ADMIN: str = os.getenv("EMAIL_ADMIN")
     OPENAI_API_KEY: str = os.getenv("OPENAI_API_KEY")

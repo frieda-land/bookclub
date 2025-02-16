@@ -1,4 +1,3 @@
-import json
 from typing import Annotated
 
 from config import templates
