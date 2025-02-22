@@ -14,7 +14,8 @@ class ChallengeCategoryBase(BaseModel):
 
 
 class ChallengeCategoryCreate(ChallengeCategoryBase):
-    pass
+    group_id_custom_category: int | None = None
+    challenge_id: int | None = None
 
 
 class ChallengeCategory(ChallengeCategoryBase):
@@ -96,6 +97,7 @@ class SubmittedBook(BaseModel):
     author: str
     name: str
     rating: int
+    group_id: int | None = None
 
 
 class CreateAllCategoriesResponse(BaseModel):
@@ -119,5 +121,6 @@ class TrophyCreate(BaseModel):
     kind: TrophyType
     year: int
     number_of_books_read: int
+    group_id: int | None = None
     user_id: int | None = None
     month: int | None = None

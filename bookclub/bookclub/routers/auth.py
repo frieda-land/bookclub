@@ -79,6 +79,7 @@ async def auth_google(request: Request, code: str, db: Session = Depends(get_db)
     if not user and is_allowed_email_address:
         try:
             is_admin_request = is_allowed_email_address.is_admin_request_for_group_id
+            is_user_request = is_allowed_email_address.is_user_request_for_group_id
             user = crud.create_user(
                 db,
                 schema.UserCreate(
@@ -88,7 +89,9 @@ async def auth_google(request: Request, code: str, db: Session = Depends(get_db)
             )
             if is_admin_request:
                 group = crud.update_group_admin(db, is_admin_request, user.id)
-                crud.create_group_membership(db, schema.UserGroupUpdate(group_id=group.id, user_id=user.id))
+            else:
+                group = crud.get_group_by_id(db, is_user_request)
+            crud.create_group_membership(db, schema.UserGroupUpdate(group_id=group.id, user_id=user.id))
         except Exception:
             # add logging
             return RedirectResponse(url="/signup?message=failed_to_create_user")
@@ -102,6 +105,8 @@ async def auth_google(request: Request, code: str, db: Session = Depends(get_db)
 
     response.set_cookie(key="access_token", value=access_token)
     response.set_cookie(key="user_id", value=str(user.id))
+    default_group = crud.get_default_group(db, user.id)
+    response.set_cookie(key="group_id", value=default_group.id)
 
     return response
 

@@ -26,8 +26,9 @@ def get_user_by_username(db: Session, username: str):
     return db.query(models.User).filter(models.User.username == username).first()
 
 
-def get_users(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(models.User).offset(skip).limit(limit).all()
+def get_users(db: Session, group_id: int):
+    memberships = db.query(models.GroupMembership).filter(models.GroupMembership.group_id == group_id).all()
+    return [membership.user for membership in memberships]
 
 
 def create_user(db: Session, user: schema.UserCreate):
@@ -38,27 +39,28 @@ def create_user(db: Session, user: schema.UserCreate):
     return db_user
 
 
-def get_categories(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(models.ChallengeCategory).offset(skip).limit(limit).all()
+# def get_categories(db: Session, skip: int = 0, limit: int = 100):
+#     return db.query(models.ChallengeCategory).offset(skip).limit(limit).all()
 
 
-def get_category_by_number(db: Session, original_number: int, year: int = 2025):
+def get_category_by_number(db: Session, actual_id: int, year: int = 2025):
     return (
         db.query(models.ChallengeCategory)
         .filter(
-            models.ChallengeCategory.id == original_number,
+            models.ChallengeCategory.id == actual_id,
             models.ChallengeCategory.year == year,
         )
         .first()
     )
 
 
-def get_latest_number_for_year(db: Session, year: int = 2025):
+def get_latest_number_for_year(db: Session, challenge_id: int, year: int = 2025):
     try:
         largest_category = (
             db.query(models.ChallengeCategory)
             .filter(
                 models.ChallengeCategory.year == year,
+                models.ChallengeCategory.challenge_id == challenge_id,
             )
             .order_by(models.ChallengeCategory.year)
             .all()
@@ -68,23 +70,28 @@ def get_latest_number_for_year(db: Session, year: int = 2025):
         return 0
 
 
-def get_category_by_original_number(db: Session, original_number: int, year: int = 2025):
+def get_category_by_original_number(
+    db: Session, original_number: int, challenge_id: int, year: int = settings.CURRENT_YEAR
+):
     return (
         db.query(models.ChallengeCategory)
         .filter(
             models.ChallengeCategory.original_number == original_number,
             models.ChallengeCategory.year == year,
+            models.ChallengeCategory.challenge_id == challenge_id,
         )
         .first()
     )
 
 
-def get_category_by_title(db: Session, title: str, year: int = 2025):
+def get_category_by_title(db: Session, title: str, challenge_id: int, group_id: int = None, year: int = 2025):
     return (
         db.query(models.ChallengeCategory)
         .filter(
             models.ChallengeCategory.title == title,
             models.ChallengeCategory.year == year,
+            models.ChallengeCategory.challenge_id == challenge_id,
+            models.ChallengeCategory.group_id_custom_category == group_id,
         )
         .first()
     )
@@ -96,6 +103,7 @@ def create_challenge_category(db: Session, item: schema.ChallengeCategoryCreate)
         title=item.title,
         year=item.year,
         user_id_custom_category=item.user_id_custom_category,
+        group_id_custom_category=item.group_id_custom_category,
     )
     db.add(db_item)
     db.commit()
@@ -103,12 +111,13 @@ def create_challenge_category(db: Session, item: schema.ChallengeCategoryCreate)
     return db_item
 
 
-def get_category_for_user(db: Session, user_id: int, category_id: int):
+def get_category_for_user(db: Session, user_id: int, category_id: int, group_id: int):
     return (
         db.query(models.Association)
         .filter(
             models.Association.category_id == category_id,
             models.Association.user_id == user_id,
+            models.Association.group_id == group_id,
         )
         .first()
     )
@@ -121,13 +130,15 @@ def create_entry_for_user(
     year: int,
     submitted_book: schema.SubmittedBook,
 ):
-    category_id = get_category_by_original_number(db, original_number, year).id
-    existing_entry = get_category_for_user(db, user_id, category_id)
+    group = db.query(models.Group).filter(models.Group.id == submitted_book.group_id).first()
+    category_id = get_category_by_original_number(db, original_number, group.challenge_id, year).id
+    existing_entry = get_category_for_user(db, user_id, category_id, group.id)
     if existing_entry:
         print("Already exists")
         return
     db_category = models.Association(
         user_id=user_id,
+        group_id=submitted_book.group_id,
         category_id=category_id,
         book_name=submitted_book.name,
         author=submitted_book.author,
@@ -147,8 +158,10 @@ def delete_entry_for_user(
     db: Session,
     user_id: int,
     category_number: int,
+    group_id: int,
 ):
-    category_id = get_category_by_original_number(db, category_number).id
+    group = db.query(models.Group).filter(models.Group.id == group_id).first()
+    category_id = get_category_by_original_number(db, category_number, group.challenge_id).id
     item = (
         db.query(models.Association)
         .filter(
@@ -161,25 +174,29 @@ def delete_entry_for_user(
     db.commit()
 
 
-def get_books_for_user(db: Session, user_id: str):
-    user = get_user(db, int(user_id))
-    if not user:
-        # handle
-        pass
-    return user.challenge_categories
+# def get_books_for_user(db: Session, user_id: str):
+#     user = get_user(db, int(user_id))
+#     if not user:
+#         # handle
+#         pass
+#     return user.challenge_categories
 
 
-def get_books_for_user_for_year(db: Session, user_id: str, year: int):
-    user = get_user(db, int(user_id))
-    return [challenge for challenge in user.challenge_categories if challenge.challenge_category.year == year]
+def get_books_for_user_for_year(db: Session, user: models.User, year: int, group_id: int):
+    return [
+        challenge
+        for challenge in user.challenge_categories
+        if challenge.challenge_category.year == year and challenge.group_id == group_id
+    ]
 
 
-def get_books_for_user_for_last_30_days(db: Session, user_id: int):
+def get_books_for_user_for_last_30_days(db: Session, user_id: int, group_id: int):
     checkpoint = datetime.now() - timedelta(days=30)
     return (
         db.query(models.Association)
         .filter(
             models.Association.user_id == user_id,
+            models.Association.group_id == group_id,
             models.Association.created_at > checkpoint,
         )
         .all()
@@ -187,24 +204,26 @@ def get_books_for_user_for_last_30_days(db: Session, user_id: int):
 
 
 # todo make year dynamic
-def get_unused_categories(db: Session, user_id: int, year: int):
+def get_unused_categories(db: Session, user_id: int, year: int, challenge_id: int):
     return (
         db.query(models.ChallengeCategory)
         .filter(
             ~models.ChallengeCategory.users.any(user_id=user_id),
             models.ChallengeCategory.year == year,
+            models.ChallengeCategory.challenge_id == challenge_id,
         )
         .all()
     )
 
 
-def get_latest_submissions(db: Session, limit: int = 3):
+def get_latest_submissions(db: Session, group_id: int, limit: int = 3):
     first_day_of_year = datetime(CURRENT_YEAR, 1, 1)
     return (
         db.query(models.Association)
         .join(models.ChallengeCategory, models.Association.category_id == models.ChallengeCategory.id)
         .filter(
             models.Association.created_at > first_day_of_year,
+            models.Association.group_id == group_id,
             models.ChallengeCategory.year == CURRENT_YEAR,
         )
         .order_by(models.Association.created_at.desc())
@@ -254,6 +273,7 @@ def remove_bookmark_by_id(db: Session, bookmark_id: int):
     db.commit()
 
 
+# adjust UI to show to which group the category belongs
 def get_custom_categories(db: Session, user_id: int, year: int = 2025):
     return (
         db.query(models.ChallengeCategory)
@@ -279,18 +299,20 @@ def remove_category_by_title(db: Session, title: str, user_id: int):
     return category
 
 
-def submitted_books_for_category_by_title(db: Session, title: str):
+def submitted_books_for_category_by_title(db: Session, title: str, group_id: int):
     category_id = db.query(models.ChallengeCategory).filter(models.ChallengeCategory.title == title).first().id
     categories = (
         db.query(models.Association)
         .filter(
             models.Association.category_id == category_id,
+            models.Association.group_id == group_id,
         )
         .all()
     )
     return categories
 
 
+# user should get newsletter for their groups
 def subscribe_user_to_newsletter(db: Session, user: models.User, email: str):
     user = get_user(db, user.id)
     user.newsletter_email_address = email.lower()
@@ -330,9 +352,13 @@ def is_allowed_email(db: Session, email: str):
     return db.query(models.AllowedEmailAddress).filter(models.AllowedEmailAddress.email == email.lower()).first()
 
 
-def get_last_submitted_books(db: Session, time_delta: int = 30):
+def get_last_submitted_books(db: Session, group_id: int, time_delta: int = 30):
     checkpoint = datetime.now() - timedelta(days=time_delta)
-    return db.query(models.Association).filter(models.Association.created_at > checkpoint).all()
+    return (
+        db.query(models.Association)
+        .filter(models.Association.created_at > checkpoint, models.Association.group_id == group_id)
+        .all()
+    )
 
 
 def get_books_of_month(month: int, year: int, db: Session):
@@ -444,8 +470,8 @@ def fill_monthly_buckets(books: List[models.Association]):
     return monthly_buckets
 
 
-def get_statistics(db: Session):
-    books_last_6_months = get_last_submitted_books(db, 180)
+def get_statistics(db: Session, group_id: int):
+    books_last_6_months = get_last_submitted_books(db, group_id, 180)
     monthly_buckets = fill_monthly_buckets(books_last_6_months)
     return {
         "months": list(monthly_buckets.keys()),
@@ -453,6 +479,7 @@ def get_statistics(db: Session):
     }
 
 
+# todo migrate to new file naming
 def upload_bookcover(db: Session, file_wrapper: UploadFile, book_name: str, author: str):
     storage_client = storage.Client()
     bucket = storage_client.bucket(BUCKET_NAME)
@@ -469,13 +496,14 @@ def upload_bookcover(db: Session, file_wrapper: UploadFile, book_name: str, auth
     return blob.public_url
 
 
-def create_trophy(db: Session, tropy: schema.TrophyCreate):
+def create_trophy(db: Session, trophy: schema.TrophyCreate):
     db_trophy = models.Trophy(
-        user_id=tropy.user_id,
-        kind=tropy.kind,
-        month=tropy.month,
-        year=tropy.year,
-        number_of_books_read=tropy.number_of_books_read,
+        user_id=trophy.user_id,
+        kind=trophy.kind,
+        month=trophy.month,
+        year=trophy.year,
+        number_of_books_read=trophy.number_of_books_read,
+        group_id=trophy.group_id,
     )
     db.add(db_trophy)
     db.commit()
@@ -485,6 +513,10 @@ def create_trophy(db: Session, tropy: schema.TrophyCreate):
 
 def get_challenge_by_name(db: Session, name: str):
     return db.query(models.Challenge).filter(models.Challenge.name == name).first()
+
+
+def get_group_by_id(db: Session, group_id: int):
+    return db.query(models.Group).filter(models.Group.id == group_id).first()
 
 
 def create_group(db: Session, group: schema.GroupCreate):
@@ -501,10 +533,23 @@ def create_group(db: Session, group: schema.GroupCreate):
 
 
 def update_group_membership_default(db: Session, group_id: int, user_id: int, is_default: bool = False):
-    db.query(models.GroupMembership).filter(models.GroupMembership.user_id == user_id).update(
-        {"is_default_group": is_default}
-    )
+    db.query(models.GroupMembership).filter(
+        models.GroupMembership.user_id == user_id, models.GroupMembership.group_id == group_id
+    ).update({"is_default_group": is_default})
     db.commit()
+
+
+def get_group_admin_email(db: Session, group_id: int):
+    return (
+        db.query(models.User)
+        .filter(models.User.id == db.query(models.Group).filter(models.Group.id == group_id).first().admin_id)
+        .first()
+        .email
+    )
+
+
+def get_all_groups(db: Session):
+    return db.query(models.Group).all()
 
 
 def create_group_membership(db: Session, group: schema.UserGroupUpdate):
@@ -520,3 +565,16 @@ def update_group_admin(db: Session, group_id: int, admin_id: int):
     db.query(models.Group).filter(models.Group.id == group_id).update({"admin_id": admin_id})
     db.commit()
     return db.query(models.Group).filter(models.Group.id == group_id).first()
+
+
+def get_default_group(db: Session, user_id: int):
+    return (
+        db.query(models.GroupMembership)
+        .filter(models.GroupMembership.user_id == user_id, models.GroupMembership.is_default_group.is_(True))
+        .first()
+        .group
+    )
+
+
+def get_challenge_by_id(db: Session, id: int):
+    return db.query(models.Challenge).filter(models.Challenge.id == id).first()

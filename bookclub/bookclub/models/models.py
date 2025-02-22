@@ -39,6 +39,7 @@ class Association(Base):
     user: Mapped["User"] = relationship(back_populates="challenge_categories")
 
 
+# todo user should not be allowed to join the same challenge twice
 class User(Base):
     __tablename__ = "user"
 
@@ -81,6 +82,7 @@ class Challenge(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String)
     description: Mapped[str] = mapped_column(String)
+    year: Mapped[int] = mapped_column(Integer, nullable=True)
 
     challenge_categories: Mapped[List["ChallengeCategory"]] = relationship("ChallengeCategory")
 
@@ -91,7 +93,8 @@ class ChallengeCategory(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     challenge_id: Mapped[int] = mapped_column(ForeignKey("challenge.id"), nullable=True, index=True)
     original_number: Mapped[int] = mapped_column(Integer)
-    title: Mapped[str] = mapped_column(String, index=True, unique=True)
+    title: Mapped[str] = mapped_column(String, index=True)
+    # drop this
     year: Mapped[int] = mapped_column(Integer, index=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now(tz=timezone.utc))
     user_id_custom_category: Mapped[int] = mapped_column(ForeignKey("user.id"), nullable=True)
@@ -109,6 +112,7 @@ class AllowedEmailAddress(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now(tz=timezone.utc))
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
     is_admin_request_for_group_id: Mapped[int] = mapped_column(ForeignKey("group.id"), nullable=True)
+    is_user_request_for_group_id: Mapped[int] = mapped_column(ForeignKey("group.id"), nullable=True)
 
 
 class Trophy(Base):

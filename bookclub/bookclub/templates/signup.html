@@ -52,18 +52,16 @@
             <input type="email" id="email" name="email" required />
           </div>
           <div class="form-group">
-            <label for="reason"
-              >Wie bist du auf uns aufmerksam geworden?*</label
-            >
-            <select id="reason" name="reason">
-              <option value="google">Ich bin zufällig darauf gestoßen</option>
-              <option value="friend">Freunde haben mir davon erzählt</option>
-              <option value="other">Anderes</option>
+            <label for="group">Gruppe:*</label>
+            <select id="group" name="group">
+              {% for group in groups %}
+              <option value="{{ group.id }}">{{ group.name }}</option>
+              {% endfor %}
             </select>
           </div>
           <div class="form-group">
-            <label for="friend">Name Freund_in:</label>
-            <input type="friend" id="friend" name="friend" />
+            <label for="reason">Wie bist du auf uns aufmerksam geworden?</label>
+            <input type="reason" id="reason" name="reason" />
           </div>
           <button type="submit">Anfrage senden</button>
         </form>

@@ -4,10 +4,10 @@ from settings import settings
 CURRENT_YEAR = settings.CURRENT_YEAR
 
 
-def generate_leaderboard(db, year=CURRENT_YEAR):
+def generate_leaderboard(db, group_id, year=CURRENT_YEAR):
     all_users = []
-    for user in crud.get_users(db):
-        users_completed_categories = crud.get_books_for_user_for_year(db, user.id, year)
+    for user in crud.get_users(db, group_id):
+        users_completed_categories = crud.get_books_for_user_for_year(db, user, year, group_id)
         # if len(users_completed_categories) == 0:
         #     continue
         all_users.append(
