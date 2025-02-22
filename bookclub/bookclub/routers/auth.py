@@ -78,8 +78,8 @@ async def auth_google(request: Request, code: str, db: Session = Depends(get_db)
 
     if not user and is_allowed_email_address:
         try:
-            is_admin_request = is_allowed_email_address.is_admin_request_for_group_id
-            is_user_request = is_allowed_email_address.is_user_request_for_group_id
+            admin_request_group_id = is_allowed_email_address.is_admin_request_for_group_id
+            user_request_group_id = is_allowed_email_address.is_user_request_for_group_id
             user = crud.create_user(
                 db,
                 schema.UserCreate(
@@ -87,10 +87,10 @@ async def auth_google(request: Request, code: str, db: Session = Depends(get_db)
                     email=user_google_email,
                 ),
             )
-            if is_admin_request:
-                group = crud.update_group_admin(db, is_admin_request, user.id)
+            if admin_request_group_id:
+                group = crud.update_group_admin(db, admin_request_group_id, user.id)
             else:
-                group = crud.get_group_by_id(db, is_user_request)
+                group = crud.get_group_by_id(db, user_request_group_id)
             crud.create_group_membership(db, schema.UserGroupUpdate(group_id=group.id, user_id=user.id))
         except Exception:
             # add logging

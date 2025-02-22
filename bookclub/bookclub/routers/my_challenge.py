@@ -62,8 +62,14 @@ def submit_book(
 
 
 @router.get("/books/{user_id}")
-def my_books(user_id: str, year: int = CURRENT_YEAR, db: Session = Depends(get_db)):
-    books = crud.get_books_for_user_for_year(db, user_id, year)
+def my_books(
+    user_id: str,
+    current_user: Annotated[models.User, Depends(get_current_active_user)],
+    year: int = CURRENT_YEAR,
+    db: Session = Depends(get_db),
+):
+    group = crud.get_default_group(db, current_user.id)
+    books = crud.get_books_for_user_for_year(db, current_user, year, group.id)
     transformed_books = []
     for book in books:
         b = crud.get_category_by_number(db, book.category_id)
@@ -98,14 +104,16 @@ def delete_book(
 @router.get("/all_unused_categories/{user_id}")
 async def all_unused_categories(
     user_id: str,
+    current_user: Annotated[models.User, Depends(get_current_active_user)],
     db: Session = Depends(get_db),
     year: int = CURRENT_YEAR,
 ):
+    group = crud.get_default_group(db, current_user.id)
     all_categories = [
         {
             "original_number": category.original_number,
             "title": category.title,
         }
-        for category in crud.get_unused_categories(db, int(user_id), year)
+        for category in crud.get_unused_categories(db, int(user_id), year, group.challenge_id)
     ]
     return sorted(all_categories, key=lambda item: item["original_number"], reverse=False)

@@ -38,8 +38,9 @@ async def signup(request: Request, db: Session = Depends(get_db)):
 
 
 @router.get("/create_group", response_class=HTMLResponse)
-async def create_group(request: Request):
-    return templates.TemplateResponse(request=request, name="create_group.html")
+async def create_group(request: Request, db: Session = Depends(get_db)):
+    challenges = crud.get_all_challenges(db)
+    return templates.TemplateResponse("create_group.html", {"request": request, "challenges": challenges})
 
 
 @router.post("/create_group", response_class=JSONResponse)

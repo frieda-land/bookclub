@@ -410,11 +410,11 @@ def get_reader_of_the_year(year: int, db: Session) -> List[schema.TrophyReaderUs
     return readers_of_the_month
 
 
-def get_reader_of_last_30_days(db: Session):
+def get_reader_of_last_30_days(db: Session, group_id: int):
     all_readers_of_the_month = []
     current_max = 0
-    for user in get_users(db):
-        users_completed_categories = get_books_for_user_for_last_30_days(db, user.id)
+    for user in get_users(db, group_id):
+        users_completed_categories = get_books_for_user_for_last_30_days(db, user.id, group_id)
         amount = len(users_completed_categories)
         if amount == 0:
             continue
@@ -578,3 +578,7 @@ def get_default_group(db: Session, user_id: int):
 
 def get_challenge_by_id(db: Session, id: int):
     return db.query(models.Challenge).filter(models.Challenge.id == id).first()
+
+
+def get_all_challenges(db: Session):
+    return db.query(models.Challenge).all()
