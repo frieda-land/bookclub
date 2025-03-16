@@ -8,12 +8,14 @@ from database import engine, get_db
 from fastapi import Depends, FastAPI
 from fastapi.staticfiles import StaticFiles
 from models.models import TrophyType
-from requests import Session
 from routers import (
+    admin,
     ai_recommendations,
     auth,
     bookmarks,
     categories,
+    challenge,
+    group,
     home,
     my_challenge,
     previous_challenges,
@@ -77,5 +79,8 @@ app.include_router(categories.router)
 app.include_router(previous_challenges.router)
 app.include_router(profile.router)
 app.include_router(statistics.router)
+app.include_router(admin.router)
+app.include_router(group.router)
+app.include_router(challenge.router)
 
 app.mount("/static", StaticFiles(directory="static"), name="static")

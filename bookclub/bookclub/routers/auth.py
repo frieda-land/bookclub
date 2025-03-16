@@ -41,6 +41,17 @@ async def login(request: Request):
     return {"authorization_url": url}
 
 
+def create_group_membership(db: Session, user: models.User, group: models.AllowedEmailAddress):
+    admin_request_group_id = group.is_admin_request_for_group_id
+    user_request_group_id = group.is_user_request_for_group_id
+
+    if admin_request_group_id:
+        group = crud.update_group_admin(db, admin_request_group_id, user.id)
+    else:
+        group = crud.get_group_by_id(db, user_request_group_id)
+    crud.create_group_membership(db, schema.UserGroupUpdate(group_id=group.id, user_id=user.id))
+
+
 @router.get("/google")
 async def auth_google(request: Request, code: str, db: Session = Depends(get_db)):
     if not code:
@@ -74,12 +85,10 @@ async def auth_google(request: Request, code: str, db: Session = Depends(get_db)
     user_google_email = user_info.get("email")
     user_google_name = user_info.get("name")
     user = crud.get_user_by_email(db, user_google_email)
-    is_allowed_email_address = crud.is_allowed_email(db, user_google_email)
+    is_allowed_email_address_for_groups = crud.is_allowed_email_for_groups(db, user_google_email)
 
-    if not user and is_allowed_email_address:
+    if not user and is_allowed_email_address_for_groups:
         try:
-            admin_request_group_id = is_allowed_email_address.is_admin_request_for_group_id
-            user_request_group_id = is_allowed_email_address.is_user_request_for_group_id
             user = crud.create_user(
                 db,
                 schema.UserCreate(
@@ -87,17 +96,27 @@ async def auth_google(request: Request, code: str, db: Session = Depends(get_db)
                     email=user_google_email,
                 ),
             )
-            if admin_request_group_id:
-                group = crud.update_group_admin(db, admin_request_group_id, user.id)
-            else:
-                group = crud.get_group_by_id(db, user_request_group_id)
-            crud.create_group_membership(db, schema.UserGroupUpdate(group_id=group.id, user_id=user.id))
+            for group in is_allowed_email_address_for_groups:
+                create_group_membership(db, group)
         except Exception:
             # add logging
             return RedirectResponse(url="/signup?message=failed_to_create_user")
     elif not user:
         # add logging
         return RedirectResponse(url="/signup?message=invalid_user")
+    elif is_allowed_email_address_for_groups:
+        group_membership_ids = [membership.group_id for membership in crud.get_group_membership(db, user.id)]
+        missing_memberships = []
+        for group in is_allowed_email_address_for_groups:
+            admin_request = group.is_admin_request_for_group_id
+            user_request = group.is_user_request_for_group_id
+            if admin_request and admin_request not in group_membership_ids:
+                missing_memberships.append(group)
+            elif user_request and user_request not in group_membership_ids:
+                missing_memberships.append(group)
+        if missing_memberships:
+            for group in missing_memberships:
+                create_group_membership(db, user, group)
 
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(data={"sub": user_google_email.lower()}, expires_delta=access_token_expires)

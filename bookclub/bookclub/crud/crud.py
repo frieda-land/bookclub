@@ -104,6 +104,7 @@ def create_challenge_category(db: Session, item: schema.ChallengeCategoryCreate)
         year=item.year,
         user_id_custom_category=item.user_id_custom_category,
         group_id_custom_category=item.group_id_custom_category,
+        challenge_id=item.challenge_id,
     )
     db.add(db_item)
     db.commit()
@@ -274,11 +275,12 @@ def remove_bookmark_by_id(db: Session, bookmark_id: int):
 
 
 # adjust UI to show to which group the category belongs
-def get_custom_categories(db: Session, user_id: int, year: int = 2025):
+def get_custom_categories(db: Session, user_id: int, challenge_id: int, year: int = 2025):
     return (
         db.query(models.ChallengeCategory)
         .filter(
             models.ChallengeCategory.user_id_custom_category == user_id,
+            models.ChallengeCategory.challenge_id == challenge_id,
             models.ChallengeCategory.year == year,
         )
         .all()
@@ -337,6 +339,7 @@ def create_allowed_email(db: Session, allowed_email: schema.AllowedEmailCreate):
     allowed_email = models.AllowedEmailAddress(
         email=allowed_email.email.lower().strip(),
         is_admin_request_for_group_id=allowed_email.is_admin_request_for_group_id,
+        is_user_request_for_group_id=allowed_email.is_user_request_for_group_id,
     )
     db.add(allowed_email)
     try:
@@ -348,8 +351,22 @@ def create_allowed_email(db: Session, allowed_email: schema.AllowedEmailCreate):
     return allowed_email
 
 
-def is_allowed_email(db: Session, email: str):
-    return db.query(models.AllowedEmailAddress).filter(models.AllowedEmailAddress.email == email.lower()).first()
+def remove_from_allowed_emails(db: Session, user_id: int, group_id: int):
+    db.query(models.AllowedEmailAddress).filter(
+        models.AllowedEmailAddress.is_admin_request_for_group_id == group_id
+    ).delete()
+    db.commit()
+
+
+def is_allowed_email(db: Session, email: str, group_id: int = None):
+    query = db.query(models.AllowedEmailAddress).filter(models.AllowedEmailAddress.email == email.lower())
+    if group_id:
+        query = query.filter(models.AllowedEmailAddress.is_user_request_for_group_id == group_id)
+    return query.first()
+
+
+def is_allowed_email_for_groups(db: Session, email: str):
+    return db.query(models.AllowedEmailAddress).filter(models.AllowedEmailAddress.email == email.lower()).all()
 
 
 def get_last_submitted_books(db: Session, group_id: int, time_delta: int = 30):
@@ -561,6 +578,10 @@ def create_group_membership(db: Session, group: schema.UserGroupUpdate):
     return db_membership
 
 
+def get_group_membership(db: Session, user_id: int):
+    return db.query(models.GroupMembership).filter(models.GroupMembership.user_id == user_id).all()
+
+
 def update_group_admin(db: Session, group_id: int, admin_id: int):
     db.query(models.Group).filter(models.Group.id == group_id).update({"admin_id": admin_id})
     db.commit()
@@ -576,9 +597,75 @@ def get_default_group(db: Session, user_id: int):
     )
 
 
+def create_challenge(db: Session, challenge: schema.ChallengeCreate):
+    challenge = models.Challenge(name=challenge.name, description=challenge.description, year=challenge.year)
+    db.add(challenge)
+    db.commit()
+    db.refresh(challenge)
+    return challenge
+
+
 def get_challenge_by_id(db: Session, id: int):
     return db.query(models.Challenge).filter(models.Challenge.id == id).first()
 
 
 def get_all_challenges(db: Session):
     return db.query(models.Challenge).all()
+
+
+def get_groups_and_default_for_user(db: Session, user_id: int):
+    user_group_memberships = db.query(models.GroupMembership).filter(models.GroupMembership.user_id == user_id).all()
+    return [
+        {
+            "group_name": group_membership.group.name,
+            "is_default": group_membership.is_default_group,
+        }
+        for group_membership in user_group_memberships
+    ]
+
+
+def get_group_by_name(db: Session, group_name: str):
+    return db.query(models.Group).filter(models.Group.name == group_name).first()
+
+
+def get_admin_groups_and_members(db: Session, user_id: int):
+    groups = db.query(models.Group).filter(models.Group.admin_id == user_id).all()
+    result = []
+    for group in groups:
+        user_ids = [member.user_id for member in group.members if member.user_id != user_id]
+        members = [get_user(db, user_id) for user_id in user_ids]
+        my_allowed_emails = (
+            db.query(models.AllowedEmailAddress)
+            .filter(models.AllowedEmailAddress.is_user_request_for_group_id == group.id)
+            .all()
+        )
+        pending_invites_emails = [invite.email for invite in my_allowed_emails]
+        member_info = []
+        for member in members:
+            if member.email in pending_invites_emails:
+                pending_invites_emails.remove(member.email)
+            member_info.append({"username": member.username, "email": member.email})
+        result.append({"group_name": group.name, "members": member_info, "pending_invites": pending_invites_emails})
+    return result
+
+
+def remove_user_from_group(db: Session, group_id: int, user_id: int):
+    user = get_user(db, user_id)
+    membership = (
+        db.query(models.GroupMembership)
+        .filter(
+            models.GroupMembership.group_id == group_id,
+            models.GroupMembership.user_id == user_id,
+        )
+        .first()
+    )
+    db.delete(membership)
+    db.commit()
+    remove_from_allowed_emails(db, user.email)
+    return membership
+
+
+def remove_allowed_email_for_group(db: Session, group_id: int, email: str):
+    email = is_allowed_email(db, email, group_id)
+    db.delete(email)
+    db.commit()

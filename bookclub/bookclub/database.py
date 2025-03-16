@@ -7,10 +7,6 @@ from sqlalchemy.orm import sessionmaker
 
 SQLALCHEMY_DATABASE_URL = settings.DATABASE_URL
 
-# engine = create_engine(
-#     SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}, pool_size=10, max_overflow=20
-# )
-
 Base = declarative_base()
 
 db_user = settings.DB_USER  # e.g. 'my-db-user'
@@ -34,12 +30,14 @@ def getconn() -> pg8000.dbapi.Connection:
     return conn
 
 
-# The Cloud SQL Python Connector can be used with SQLAlchemy
-# using the 'creator' argument to 'create_engine'
+# engine = create_engine(
+#     "postgresql+pg8000://",
+#     creator=getconn,
+#     # ...
+# )
+
 engine = create_engine(
-    "postgresql+pg8000://",
-    creator=getconn,
-    # ...
+    SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}, pool_size=10, max_overflow=20
 )
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
@@ -50,5 +48,4 @@ def get_db():
     try:
         yield db
     finally:
-        db.close()
         db.close()

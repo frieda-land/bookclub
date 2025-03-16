@@ -24,7 +24,7 @@ async def generate_recommendations_for_category(title: str, original_language: s
         messages=[
             {
                 "role": "user",
-                "content": f"Empfiehl 10 Bücher für die Popsugar Reading Challenge 2025 in der Kategorie {title}. \
+                "content": f"Empfiehl 10 Bücher für die Popsugar Reading Challenge in der Kategorie {title}. \
                 Die Originalsprache sollte {original_language}.{additional_info}. Gib an, warum du diese Bücher empfiehlst.",
             }
         ],
@@ -51,13 +51,15 @@ def get_recommendations(
 
 @router.post("/")
 async def post_recommendations(
+    current_user: Annotated[models.User, Depends(get_current_active_user)],
     category: str = Form(...),
     original_language: str = Form(...),
     additional_info: str = Form(None),
     db: Session = Depends(get_db),
 ):
     async def recommendation_generator():
-        cat_title = crud.get_category_by_original_number(db, int(category)).title
+        default_group = crud.get_default_group(db, current_user.id)
+        cat_title = crud.get_category_by_original_number(db, int(category), default_group.challenge_id).title
         async for recommendation in generate_recommendations_for_category(
             cat_title, original_language, additional_info
         ):
@@ -67,10 +69,15 @@ async def post_recommendations(
 
 
 @router.post("/save_favourite")
-async def save_recommendation(request: Request, db: Session = Depends(get_db)):
+async def save_recommendation(
+    request: Request,
+    current_user: Annotated[models.User, Depends(get_current_active_user)],
+    db: Session = Depends(get_db),
+):
+    default_group = crud.get_default_group(db, current_user.id)
     data = await request.json()
     try:
-        category_num = crud.get_category_by_original_number(db, int(data["category"])).id
+        category_num = crud.get_category_by_original_number(db, int(data["category"]), default_group.challenge_id).id
         bookmark_content = data["content"].split(". ")[1]
         crud.add_bookmark(db, int(data["user_id"]), category_num, bookmark_content)
     except KeyError:
@@ -82,10 +89,15 @@ async def save_recommendation(request: Request, db: Session = Depends(get_db)):
 
 
 @router.post("/unsave_favourite")
-async def unsave_recommendation(request: Request, db: Session = Depends(get_db)):
+async def unsave_recommendation(
+    request: Request,
+    current_user: Annotated[models.User, Depends(get_current_active_user)],
+    db: Session = Depends(get_db),
+):
+    default_group = crud.get_default_group(db, current_user.id)
     data = await request.json()
     try:
-        category_num = crud.get_category_by_original_number(db, int(data["category"]))
+        category_num = crud.get_category_by_original_number(db, int(data["category"]), default_group.challenge_id).id
         crud.remove_bookmark(int(data["user_id"]), category_num)
     except KeyError:
         return JSONResponse(

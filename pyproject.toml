@@ -31,6 +31,7 @@ cloud-sql-python-connector = "^1.16.0"
 google-cloud-storage = "^3.0.0"
 google-auth = "^2.38.0"
 pillow = "^11.1.0"
+pydantic = {extras = ["email"], version = "^2.10.6"}
 
 
 [build-system]

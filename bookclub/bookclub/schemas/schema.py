@@ -3,6 +3,17 @@ from typing import List
 
 from models.models import TrophyType
 from pydantic import BaseModel
+from settings import settings
+
+
+class ChallengeBase(BaseModel):
+    name: str
+    description: str
+    year: int = settings.CURRENT_YEAR
+
+
+class ChallengeCreate(ChallengeBase):
+    pass
 
 
 class ChallengeCategoryBase(BaseModel):
@@ -115,6 +126,7 @@ class SubmittedBookWithUsername(SubmittedBook):
 class AllowedEmailCreate(BaseModel):
     email: str
     is_admin_request_for_group_id: int | None = None
+    is_user_request_for_group_id: int | None = None
 
 
 class TrophyCreate(BaseModel):
@@ -123,4 +135,5 @@ class TrophyCreate(BaseModel):
     number_of_books_read: int
     group_id: int | None = None
     user_id: int | None = None
+    month: int | None = None
     month: int | None = None

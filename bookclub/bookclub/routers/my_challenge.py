@@ -11,7 +11,7 @@ from schemas.schema import SubmittedBook
 from settings import settings
 from utils.auth import get_current_active_user
 
-router = APIRouter(prefix="/my_challenge", tags=["challenge"])
+router = APIRouter(prefix="/my_challenge", tags=["my_challenge"])
 
 CURRENT_YEAR = settings.CURRENT_YEAR
 

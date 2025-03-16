@@ -18,7 +18,8 @@ class Settings(BaseSettings):
     EMAIL_ADMIN: str = os.getenv("EMAIL_ADMIN")
     OPENAI_API_KEY: str = os.getenv("OPENAI_API_KEY")
     CURRENT_YEAR: int = datetime.now().year
-    DATABASE_URL: str = "booclub-446910:europe-west1:postgres-instance"
+    # DATABASE_URL: str = "booclub-446910:europe-west1:postgres-instance"
+    DATABASE_URL: str = "sqlite:///./local-shelfie.db"
     TWILLIO_KEY: str = os.getenv("TWILLIO_KEY")
     DB_NAME: str = os.getenv("DB_NAME")
     DB_USER: str = os.getenv("DB_USER")

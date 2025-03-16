@@ -112,6 +112,7 @@ async def bookclub(
             "user_id": current_user.id,
             "year": CURRENT_YEAR,
             "group_id": default_group.id,
+            "group_name": default_group.name,
             "challenge_name": challenge.name,
         },
     )

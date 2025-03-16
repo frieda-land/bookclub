@@ -86,6 +86,9 @@ class Challenge(Base):
 
     challenge_categories: Mapped[List["ChallengeCategory"]] = relationship("ChallengeCategory")
 
+    def __repr__(self):
+        return f"{self.name} Challenge"
+
 
 class ChallengeCategory(Base):
     __tablename__ = "challenge_category"
@@ -108,7 +111,7 @@ class AllowedEmailAddress(Base):
     __tablename__ = "allowed_email_address"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    email: Mapped[str] = mapped_column(String, unique=True)
+    email: Mapped[str] = mapped_column(String)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now(tz=timezone.utc))
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
     is_admin_request_for_group_id: Mapped[int] = mapped_column(ForeignKey("group.id"), nullable=True)
