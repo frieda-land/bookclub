@@ -335,6 +335,21 @@ def get_newsletter_subscribers(db: Session):
     return db.query(models.User).filter(models.User.newsletter_email_address.isnot(None)).all()
 
 
+def create_invited_email(db: Session, invited_email: schema.InvitedEmailCreate):
+    invited_email = models.AllowedEmailAddress(
+        email=invited_email.email.lower().strip(),
+        is_invited_request_for_group_id=invited_email.is_invited_request_for_group_id,
+    )
+    db.add(invited_email)
+    try:
+        db.commit()
+    except Exception:
+        db.rollback()
+        return
+    db.refresh(invited_email)
+    return invited_email
+
+
 def create_allowed_email(db: Session, allowed_email: schema.AllowedEmailCreate):
     allowed_email = models.AllowedEmailAddress(
         email=allowed_email.email.lower().strip(),
@@ -351,16 +366,19 @@ def create_allowed_email(db: Session, allowed_email: schema.AllowedEmailCreate):
     return allowed_email
 
 
-def remove_from_allowed_emails(db: Session, user_id: int, group_id: int):
+def remove_from_allowed_emails(db: Session, user_email: str, group_id: int):
     db.query(models.AllowedEmailAddress).filter(
-        models.AllowedEmailAddress.is_admin_request_for_group_id == group_id
+        models.AllowedEmailAddress.email == user_email.lower(),
+        models.AllowedEmailAddress.is_user_request_for_group_id == group_id,
     ).delete()
     db.commit()
 
 
-def is_allowed_email(db: Session, email: str, group_id: int = None):
+def is_allowed_email(db: Session, email: str, group_id: int = None, is_invited_only: bool = False):
     query = db.query(models.AllowedEmailAddress).filter(models.AllowedEmailAddress.email == email.lower())
-    if group_id:
+    if is_invited_only and group_id:
+        query = query.filter(models.AllowedEmailAddress.is_invited_request_for_group_id == group_id)
+    elif group_id:
         query = query.filter(models.AllowedEmailAddress.is_user_request_for_group_id == group_id)
     return query.first()
 
@@ -507,7 +525,7 @@ def upload_bookcover(db: Session, file_wrapper: UploadFile, book_name: str, auth
     compressed_image_io = io.BytesIO()
     image.save(compressed_image_io, format="JPEG", quality=70)
     compressed_image_io.seek(0)
-
+    breakpoint()
     blob.upload_from_file(compressed_image_io, content_type="image/jpeg")
 
     return blob.public_url
@@ -554,6 +572,7 @@ def update_group_membership_default(db: Session, group_id: int, user_id: int, is
         models.GroupMembership.user_id == user_id, models.GroupMembership.group_id == group_id
     ).update({"is_default_group": is_default})
     db.commit()
+    breakpoint()
 
 
 def get_group_admin_email(db: Session, group_id: int):
@@ -570,7 +589,9 @@ def get_all_groups(db: Session):
 
 
 def create_group_membership(db: Session, group: schema.UserGroupUpdate):
-    update_group_membership_default(db, group.group_id, group.user_id)
+    current_group = get_default_group(db, group.user_id)
+    if current_group:
+        update_group_membership_default(db, current_group.id, group.user_id, False)
     db_membership = models.GroupMembership(group_id=group.group_id, user_id=group.user_id, is_default_group=True)
     db.add(db_membership)
     db.commit()
@@ -589,12 +610,14 @@ def update_group_admin(db: Session, group_id: int, admin_id: int):
 
 
 def get_default_group(db: Session, user_id: int):
-    return (
+    default_group = (
         db.query(models.GroupMembership)
         .filter(models.GroupMembership.user_id == user_id, models.GroupMembership.is_default_group.is_(True))
         .first()
-        .group
     )
+    if default_group:
+        return default_group.group
+    return None
 
 
 def create_challenge(db: Session, challenge: schema.ChallengeCreate):
@@ -611,6 +634,21 @@ def get_challenge_by_id(db: Session, id: int):
 
 def get_all_challenges(db: Session):
     return db.query(models.Challenge).all()
+
+
+def get_new_challenges_for_user(db: Session, user_emaill: str):
+    allowed_email_entries = (
+        db.query(models.AllowedEmailAddress).filter(models.AllowedEmailAddress.email == user_emaill).all()
+    )
+    active_challenge_ids = []
+    for entry in allowed_email_entries:
+        if entry.is_user_request_for_group_id:
+            group = db.query(models.Group).filter(models.Group.id == entry.is_user_request_for_group_id).first()
+            active_challenge_ids.append(group.challenge_id)
+        elif entry.is_admin_request_for_group_id:
+            group = db.query(models.Group).filter(models.Group.id == entry.is_admin_request_for_group_id).first()
+            active_challenge_ids.append(group.challenge_id)
+    return db.query(models.Challenge).filter(models.Challenge.id.notin_(active_challenge_ids)).all()
 
 
 def get_groups_and_default_for_user(db: Session, user_id: int):
@@ -636,14 +674,12 @@ def get_admin_groups_and_members(db: Session, user_id: int):
         members = [get_user(db, user_id) for user_id in user_ids]
         my_allowed_emails = (
             db.query(models.AllowedEmailAddress)
-            .filter(models.AllowedEmailAddress.is_user_request_for_group_id == group.id)
+            .filter(models.AllowedEmailAddress.is_invited_request_for_group_id == group.id)
             .all()
         )
         pending_invites_emails = [invite.email for invite in my_allowed_emails]
         member_info = []
         for member in members:
-            if member.email in pending_invites_emails:
-                pending_invites_emails.remove(member.email)
             member_info.append({"username": member.username, "email": member.email})
         result.append({"group_name": group.name, "members": member_info, "pending_invites": pending_invites_emails})
     return result
@@ -659,13 +695,15 @@ def remove_user_from_group(db: Session, group_id: int, user_id: int):
         )
         .first()
     )
+    breakpoint()
     db.delete(membership)
     db.commit()
-    remove_from_allowed_emails(db, user.email)
+    remove_from_allowed_emails(db, user.email, group_id)
     return membership
 
 
-def remove_allowed_email_for_group(db: Session, group_id: int, email: str):
-    email = is_allowed_email(db, email, group_id)
-    db.delete(email)
+def remove_invited_allowed_email_for_group(db: Session, group_id: int, email: str):
+    invited_only_user = is_allowed_email(db, email, group_id, True)
+    breakpoint()
+    db.delete(invited_only_user)
     db.commit()

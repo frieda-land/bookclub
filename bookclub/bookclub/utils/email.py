@@ -4,10 +4,11 @@ from datetime import datetime
 from crud import crud
 from database import engine
 from jinja2 import Environment, FileSystemLoader
-from schemas.schema import NewsletterUser
+from schemas.schema import GroupInvite, NewsletterUser
 from sendgrid import Mail, SendGridAPIClient
 from settings import settings
 from sqlalchemy.orm import sessionmaker
+from utils.exceptions import UserInviteException
 from utils.leaderboard import generate_leaderboard
 
 EMAIL_ADMIN = settings.EMAIL_ADMIN
@@ -68,6 +69,23 @@ def send_welcome_to_newsletter(db, recipient: NewsletterUser):
         send_email("Welcome To Monthly Newsletter", html, recipient.newsletter_email_address)
     finally:
         db.close()
+
+
+def inform_user_about_invitation(email: str, username: str, group: GroupInvite):
+    context = {
+        "login_url": "https://shelfie.frieda.dev/login&",
+        "username": username,
+        "group_name": group.name,
+        "challenge_name": group.challenge_name,
+    }
+    env = Environment(loader=FileSystemLoader("templates/email"))
+    template = env.get_template("invite.html", context)
+    html = template.render(context)
+    try:
+        send_email("Invite to BookClub Group", html, email)
+    except Exception:
+        # todo add exponential backoff
+        raise UserInviteException
 
 
 def inform_user_about_signup(email: str):

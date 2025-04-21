@@ -78,16 +78,19 @@ class TrophyReaderUserId(BaseModel):
 
 class GroupBase(BaseModel):
     name: str
+
+
+class GroupInvite(GroupBase):
+    challenge_name: str
+
+
+class GroupCreate(GroupBase):
     description: str
     challenge_id: int
     admin_id: int | None = None
 
 
-class GroupCreate(GroupBase):
-    pass
-
-
-class Group(GroupBase):
+class Group(GroupCreate):
     id: int
     members: List[User] = []
 
@@ -127,6 +130,11 @@ class AllowedEmailCreate(BaseModel):
     email: str
     is_admin_request_for_group_id: int | None = None
     is_user_request_for_group_id: int | None = None
+
+
+class InvitedEmailCreate(BaseModel):
+    email: str
+    is_invited_request_for_group_id: int | None = None
 
 
 class TrophyCreate(BaseModel):

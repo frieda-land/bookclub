@@ -30,15 +30,15 @@ def getconn() -> pg8000.dbapi.Connection:
     return conn
 
 
-# engine = create_engine(
-#     "postgresql+pg8000://",
-#     creator=getconn,
-#     # ...
-# )
-
 engine = create_engine(
-    SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}, pool_size=10, max_overflow=20
+    "postgresql+pg8000://",
+    creator=getconn,
+    # ...
 )
+
+# engine = create_engine(
+#     SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}, pool_size=10, max_overflow=20
+# )
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 

@@ -6,9 +6,10 @@ from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
     # generate your own secret key with the following command ssh-keygen -t rsa -b 4096 -m PEM
+    ENVIRONMENT: str = os.getenv("ENVIRONMENT")
     SECRET_KEY: str = os.getenv("SECRET_KEY")
     JWT_ALGORITHM: str = "HS256"
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 2880  # 2 days
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 14  # 2 days
     AUTHORIZE_URL_GOOGLE: str = "https://accounts.google.com/o/oauth2/auth"
     GOOGLE_CLIENT_ID: str = os.getenv("GOOGLE_CLIENT_ID")
     GOOGLE_CLIENT_SECRET: str = os.getenv("GOOGLE_CLIENT_SECRET")
@@ -19,12 +20,17 @@ class Settings(BaseSettings):
     OPENAI_API_KEY: str = os.getenv("OPENAI_API_KEY")
     CURRENT_YEAR: int = datetime.now().year
     # DATABASE_URL: str = "booclub-446910:europe-west1:postgres-instance"
-    DATABASE_URL: str = "sqlite:///./local-shelfie.db"
+    # DATABASE_URL: str = "sqlite:///./local-shelfie.db"
+    DATABASE_URL: str = os.getenv("DATABASE_URL")
     TWILLIO_KEY: str = os.getenv("TWILLIO_KEY")
     DB_NAME: str = os.getenv("DB_NAME")
     DB_USER: str = os.getenv("DB_USER")
     DB_PASS: str = os.getenv("DB_PASS")
-    GCLOUD_PICTURE_BUCKET: str = "shelfie-public-pictures"
+    GCLOUD_PICTURE_BUCKET: str = (
+        f"shelfie-public-pictures-{os.getenv('ENVIRONMENT')}"
+        if os.getenv("ENVIRONMENT") != "prd"
+        else "shelfie-public-pictures"
+    )
 
     class Config:
         env_file = ".env"

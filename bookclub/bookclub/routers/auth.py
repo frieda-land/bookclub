@@ -52,6 +52,7 @@ def create_group_membership(db: Session, user: models.User, group: models.Allowe
     crud.create_group_membership(db, schema.UserGroupUpdate(group_id=group.id, user_id=user.id))
 
 
+# start HERE -> add new user through me@frieda.dev admin account and fix auth flow
 @router.get("/google")
 async def auth_google(request: Request, code: str, db: Session = Depends(get_db)):
     if not code:
@@ -124,8 +125,6 @@ async def auth_google(request: Request, code: str, db: Session = Depends(get_db)
 
     response.set_cookie(key="access_token", value=access_token)
     response.set_cookie(key="user_id", value=str(user.id))
-    default_group = crud.get_default_group(db, user.id)
-    response.set_cookie(key="group_id", value=default_group.id)
 
     return response
 

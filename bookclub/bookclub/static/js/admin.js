@@ -30,7 +30,7 @@ function createGroupTable(groups) {
               (member) => `
               <li class="group-members">
                 ${member.username} <italic>${member.email}</italic></br>
-                <i class="fas fa-trash-alt delete-icon" data-username="${member.username}" data-group="${group.group_name}" style="cursor: pointer;"></i>
+                <i class="fas fa-trash-alt delete-icon" data-email="${member.email}" data-group="${group.group_name}" style="cursor: pointer;"></i>
               </li>
             `
             )
@@ -74,9 +74,9 @@ function createGroupTable(groups) {
 
   document.querySelectorAll(".delete-icon").forEach((icon) => {
     icon.addEventListener("click", (event) => {
-      const username = event.target.getAttribute("data-username");
+      const email = event.target.getAttribute("data-email");
       const group = event.target.getAttribute("data-group");
-      fetch(`/group/${group}/user/${username}`, {
+      fetch(`/group/${group}/user/${email}`, {
         method: "DELETE",
       }).then((response) => {
         if (response.ok) {

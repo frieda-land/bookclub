@@ -7,9 +7,11 @@ from fastapi import APIRouter, Depends, Form, Query, Request
 from fastapi.responses import JSONResponse, RedirectResponse
 from models import models
 from pydantic import EmailStr
-from schemas.schema import AllowedEmailCreate
+from schemas.schema import GroupInvite, InvitedEmailCreate
 from settings import settings
 from utils.auth import get_current_active_user
+from utils.email import inform_user_about_invitation, inform_user_about_signup
+from utils.exceptions import UserInviteException
 
 router = APIRouter(prefix="/group", tags=["group"])
 
@@ -60,19 +62,23 @@ def my_groups(
     return admin_groups
 
 
-@router.delete("/{group}/user/{username}")
+@router.delete("/{group}/user/{email}")
 def remove_user_from_group(
     group: str,
-    username: str,
+    email: str,
     current_user: Annotated[models.User, Depends(get_current_active_user)],
     db=Depends(get_db),
 ) -> JSONResponse:
     if isinstance(current_user, RedirectResponse):
         return current_user
-    group = crud.get_group_by_name(db, group)
-    user = crud.get_user_by_username(db, username)
-    crud.remove_user_from_group(db, group.id, user.id)
-    return JSONResponse(status_code=204)
+    try:
+        breakpoint()
+        group = crud.get_group_by_name(db, group)
+        user = crud.get_user_by_email(db, email)
+        crud.remove_user_from_group(db, group.id, user.id)
+    except Exception:
+        return JSONResponse(content={"message": "Failed to remove user from group."}, status_code=400)
+    return JSONResponse(status_code=204, content="User removed from group.")
 
 
 @router.delete("/{group}/invite/{email}")
@@ -86,7 +92,7 @@ def remove_allowed_email_for_group(
         return current_user
     try:
         group = crud.get_group_by_name(db, group)
-        crud.remove_allowed_email_for_group(db, group.id, email)
+        crud.remove_invited_allowed_email_for_group(db, group.id, email)
     except Exception:
         return JSONResponse(content={"message": "Failed to remove email from allowed emails."}, status_code=400)
     return JSONResponse(content={"message": "Email removed from allowed emails."})
@@ -105,7 +111,19 @@ def add_user_to_group(
 
     group = crud.get_group_by_name(db, group)
     try:
-        crud.create_allowed_email(db, AllowedEmailCreate(email=email, is_user_request_for_group_id=group.id))
+        crud.create_invited_email(db, InvitedEmailCreate(email=email, is_invited_request_for_group_id=group.id))
+        challenge_name = crud.get_challenge_by_id(db, group.challenge_id).name
+        group_invite = GroupInvite(name=group.name, challenge_name=challenge_name)
+        inform_user_about_invitation(email, current_user.username, group_invite)
+    except UserInviteException:
+        return templates.TemplateResponse(
+            "admin.html",
+            {
+                "request": request,
+                "content": {"message": "Sending invite email to user failed, we try sending it later."},
+            },
+            status_code=400,
+        )
     except Exception:
         return templates.TemplateResponse(
             "admin.html",

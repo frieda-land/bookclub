@@ -116,6 +116,7 @@ class AllowedEmailAddress(Base):
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
     is_admin_request_for_group_id: Mapped[int] = mapped_column(ForeignKey("group.id"), nullable=True)
     is_user_request_for_group_id: Mapped[int] = mapped_column(ForeignKey("group.id"), nullable=True)
+    is_invited_request_for_group_id: Mapped[int] = mapped_column(ForeignKey("group.id"), nullable=True)
 
 
 class Trophy(Base):

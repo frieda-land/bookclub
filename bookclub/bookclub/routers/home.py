@@ -7,7 +7,7 @@ from fastapi import APIRouter, Depends, Form, Query, Request
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 from models import models
 from requests import Session
-from schemas.schema import AllowedEmailCreate, GroupCreate
+from schemas.schema import AllowedEmailCreate, GroupCreate, UserGroupUpdate
 from settings import settings
 from utils.auth import get_current_active_user
 from utils.email import send_email
@@ -50,6 +50,7 @@ async def create_group_request(
     email: str = Form(...),
     description: str = Form(None),
     challenge: str = Form(...),
+    current_user_id: int = Form(None),
     db: Session = Depends(get_db),
 ):
     challenge = crud.get_challenge_by_name(db, challenge)
@@ -59,9 +60,17 @@ async def create_group_request(
             name=group_name,
             description=description,
             challenge_id=challenge.id,
+            admin_id=current_user_id,
         ),
     )
     crud.create_allowed_email(db, AllowedEmailCreate(email=email, is_admin_request_for_group_id=group.id))
+    if current_user_id:
+        group = UserGroupUpdate(user_id=current_user_id, group_id=group.id)
+        crud.create_group_membership(db, group)
+        return JSONResponse(
+            content={"message": "Group successfully created!"},
+            status_code=201,
+        )
     return JSONResponse(
         content={"message": "Group created, please login!"},
         status_code=201,
