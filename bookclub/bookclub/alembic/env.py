@@ -2,7 +2,7 @@ from logging.config import fileConfig
 
 from alembic import context
 from database import Base, engine
-from models.models import Association, BookmarkedRecommendations, Group, GroupMembership, User, AllowedEmailAddress
+from models import models
 from sqlalchemy import engine_from_config
 
 target_metadata = Base.metadata

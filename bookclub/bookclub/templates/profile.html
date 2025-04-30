@@ -39,7 +39,13 @@
             <li><a href="/recommendations"><i class="fas fa-magic"></i> AI Buchempfehlungen</a></li>
             <li><a href="/bookmarks">Bookmarked</a></li>
             <li><a href="/statistics">Statistik</a></li>
+            <li><a href="/admin">Admin</a></li>
             <li><a href="/logout">Logout</a></li>
+            <li class="dropdown">
+              <a href="javascript:void(0)" class="dropbtn" onclick="toggleDropdown()">Groups</a>
+              <div class="dropdown-content" id="groupDropdown">
+              </div>
+            </li>
           </ul>
         </nav>
       </header>
@@ -87,6 +93,7 @@
               <label for="category">Meine Kategorie:</label>
               <input type="text" id="category" name="category" required />
             </div>
+            <input type="hidden" id="group_id" name="group_id" value="" />
             {% if error %}
             <h2>{{ error }}</h2></br>
             {% endif %}
@@ -98,10 +105,24 @@
     <script>
       const newsletter_email = "{{ newsletter_email }}";
       localStorage.setItem("newsletterEmail", newsletter_email);
-      const trophies = encodeURIComponent('{{ trophies|tojson|safe }}');
+      const trophies = encodeURIComponent('{{ trophies|default([])|tojson|safe }}');
       localStorage.setItem("trophies", trophies);
+
+      function getCookie(name) {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop().split(';').shift();
+      }
+
+      document.addEventListener("DOMContentLoaded", function() {
+        const groupId = getCookie("group_id");
+        if (groupId) {
+          document.getElementById("group_id").value = groupId;
+        }
+      });
     </script>
     <script src="/static/js/test.js"></script>
     <script src="/static/js/profile.js"></script>
+    <script src="/static/js/groups.js"></script>
   </body>
 </html>

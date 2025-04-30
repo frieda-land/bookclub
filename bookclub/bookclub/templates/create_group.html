@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/png" href="/static/images/bookclub-logo.jpg" />
-    <title>Signup</title>
+    <title>Create Group</title>
     <link rel="stylesheet" href="/static/styles.css" />
     <link
       rel="stylesheet"
@@ -37,33 +37,46 @@
         </nav>
       </header>
       <main>
-        <h2>Signup</h2>
+        <h2>Create new group</h2>
         {% if request.query_params.get('message') == 'invalid_user' %}
         <p class="error-message">Invalid user. Please sign up first.</p>
         {% endif %}
         <form
           id="signupForm"
-          action="/signup"
+          action="/create_group"
           method="POST"
           class="signup-form"
         >
           <div class="form-group">
-            <label for="email">Email:*</label>
+            <label for="group_name">Group Name:*</label>
+            <input
+              type="group_name"
+              id="group_name"
+              name="group_name"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="email">Email Admin:*</label>
             <input type="email" id="email" name="email" required />
           </div>
           <div class="form-group">
-            <label for="group">Gruppe:*</label>
-            <select id="group" name="group">
-              {% for group in groups %}
-              <option value="{{ group.id }}">{{ group.name }}</option>
+            <label for="description">Description:*</label>
+            <textarea
+              type="description"
+              id="description"
+              name="description"
+            ></textarea>
+          </div>
+          <div class="form-group">
+            <label for="challenge">Challenge:*</label>
+            <select id="challenge" name="challenge">
+              {% for challenge in challenges %}
+              <option value="{{ challenge.name }}">{{ challenge.name }}</option>
               {% endfor %}
             </select>
           </div>
-          <div class="form-group">
-            <label for="reason">Wie bist du auf uns aufmerksam geworden?</label>
-            <input type="reason" id="reason" name="reason" />
-          </div>
-          <button type="submit">Anfrage senden</button>
+          <button type="submit">Create Group</button>
         </form>
         <div
           id="messageContainer"

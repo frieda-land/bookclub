@@ -1,4 +1,3 @@
-import json
 from typing import Annotated
 
 from config import templates
@@ -63,7 +62,10 @@ async def profile_custom_category(
     db: Session = Depends(get_db),
     category: str = Form(...),
 ):
-    category = ChallengeCategoryCreate(title=category)
+    default_group = crud.get_default_group(db, current_user.id)
+    category = ChallengeCategoryCreate(
+        title=category, group_id_custom_category=default_group.id, challenge_id=default_group.challenge_id
+    )
     try:
         create_single_category(db, category, current_user.id)
     except Exception as e:
@@ -76,7 +78,7 @@ async def profile_custom_category(
                 "username": current_user.username,
                 "year": CURRENT_YEAR,
                 "newsletter_email": current_user.newsletter_email_address,
-                "error": e.detail,
+                "error": e,
             },
         )
     return templates.TemplateResponse(
@@ -92,9 +94,14 @@ async def profile_custom_category(
     )
 
 
-@router.get("/custom_category/{user_id}")
-def my_books_custom_category(user_id: str, year: int = CURRENT_YEAR, db: Session = Depends(get_db)):
-    custom_categories = crud.get_custom_categories(db, int(user_id))
+@router.get("/custom_category")
+def my_books_custom_category(
+    current_user: Annotated[models.User, Depends(get_current_active_user)],
+    year: int = CURRENT_YEAR,
+    db: Session = Depends(get_db),
+):
+    default_group = crud.get_default_group(db, current_user.id)
+    custom_categories = crud.get_custom_categories(db, current_user.id, default_group.challenge_id)
     return [custom.title for custom in custom_categories] if custom_categories else []
 
 

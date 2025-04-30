@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Challenge</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+    <link rel="icon" type="image/png" href="/static/images/bookclub-logo.jpg" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/charts.css/dist/charts.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+  </head>
+
+  <body>
+    <div class="logged-in-container">
+      <header>
+        <div class="logo-container">
+          <a href="/"
+            ><img
+              src="/static/images/bookclub-logo.jpg"
+              alt="Logo"
+              class="logo"
+          /></a>
+        </div>
+        <div class="burger-menu" onclick="toggleMenu()">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+        <nav id="nav-menu">
+          <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/my_challenge">My Challenge</a></li>
+            <li><a href="/previous_challenges">Alle Challenges</a></li>
+            <li>
+              <a href="/recommendations"
+                ><i class="fas fa-magic"></i> AI Buchempfehlungen</a
+              >
+            </li>
+            <li><a href="/bookmarks">Bookmarked</a></li>
+            <li><a href="/statistics">Statistik</a></li>
+            <li><a href="/profile">Profile</a></li>
+            <li><a href="/admin">Admin</a></li>
+            <li><a href="/logout">Logout</a></li>
+            <li class="dropdown">
+              <a href="javascript:void(0)" class="dropbtn" onclick="toggleDropdown()">Groups</a>
+              <div class="dropdown-content" id="groupDropdown">
+              </div>
+            </li>
+          </ul>
+        </nav>
+      </header>
+      <main>
+        <h1>Meine Gruppen</h1>
+        <div id="groupContainer"></div>
+        <hr class="section-divider" />
+        <h1>Leser:in hinzufügen</h1>
+        <form id="bookForm" action="/group/add_user" method="POST" class="login-form">    
+            <div class="form-group">
+            <label for="group">Gruppe auswählen:</label>
+            <select id="group" name="group">
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="email">Leser:in hinzufügen:</label>
+            <input type="email" id="email" name="email" placeholder="email" />
+          </div>
+          {% if content %}
+            <p>{{ content.message }} 🎉</p>
+          {% endif %}
+          <button type="submit">Hinzufügen</button>
+        </form>
+        <hr class="section-divider" />
+        <h1>Create new group</h1>
+        <form
+          id="signupForm"
+          action="/create_group"
+          method="POST"
+          class="signup-form"
+        >
+          <div class="form-group">
+            <label for="group_name">Group Name:*</label>
+            <input
+              type="group_name"
+              id="group_name"
+              name="group_name"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="email">Email Admin:*</label>
+            <input type="email" id="email" name="email" required />
+          </div>
+          <div class="form-group">
+            <label for="description">Description:*</label>
+            <textarea
+              type="description"
+              id="description"
+              name="description"
+            ></textarea>
+          </div>
+          <input type="hidden" id="current_user_id" name="current_user_id" value="{{ current_user_id }}" />
+          <div class="form-group">
+            <label for="challenge">Challenge:*</label>
+            <select id="challenge" name="challenge">
+              {% for challenge in challenges %}
+              <option value="{{ challenge.name }}">{{ challenge.name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <button type="submit">Create Group</button>
+        </form>
+        <div
+          id="messageContainer"
+          class="message-container"
+          style="display: none; margin-top: 20px"
+        ></div>
+      </main>
+  </body>
+  <script>
+    document.getElementById("signupForm").addEventListener("submit", function(event) {
+      event.preventDefault();
+      const form = event.target;
+      const formData = new FormData(form);
+      fetch(form.action, {
+        method: form.method,
+        body: formData,
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.message === "Group successfully created!") {
+          alert(data.message);
+          window.location.reload();
+        } else {
+          alert("Failed to create group.");
+        }
+      })
+      .catch(error => {
+        console.error("Error:", error);
+        alert("An error occurred.");
+      });
+    });
+  </script>
+  <script src="/static/js/test.js"></script>
+  <script src="/static/js/groups.js"></script>
+  <script src="/static/js/admin.js"></script>
+</html>

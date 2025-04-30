@@ -3,6 +3,17 @@ from typing import List
 
 from models.models import TrophyType
 from pydantic import BaseModel
+from settings import settings
+
+
+class ChallengeBase(BaseModel):
+    name: str
+    description: str
+    year: int = settings.CURRENT_YEAR
+
+
+class ChallengeCreate(ChallengeBase):
+    pass
 
 
 class ChallengeCategoryBase(BaseModel):
@@ -14,7 +25,8 @@ class ChallengeCategoryBase(BaseModel):
 
 
 class ChallengeCategoryCreate(ChallengeCategoryBase):
-    pass
+    group_id_custom_category: int | None = None
+    challenge_id: int | None = None
 
 
 class ChallengeCategory(ChallengeCategoryBase):
@@ -33,6 +45,11 @@ class UserBase(BaseModel):
 
 class UserCreate(UserBase):
     pass
+
+
+class UserGroupUpdate(BaseModel):
+    group_id: int
+    user_id: int
 
 
 class User(UserBase):
@@ -61,15 +78,19 @@ class TrophyReaderUserId(BaseModel):
 
 class GroupBase(BaseModel):
     name: str
-    description: str
-    created_at: datetime
+
+
+class GroupInvite(GroupBase):
+    challenge_name: str
 
 
 class GroupCreate(GroupBase):
-    pass
+    description: str
+    challenge_id: int
+    admin_id: int | None = None
 
 
-class Group(GroupBase):
+class Group(GroupCreate):
     id: int
     members: List[User] = []
 
@@ -90,6 +111,7 @@ class SubmittedBook(BaseModel):
     author: str
     name: str
     rating: int
+    group_id: int | None = None
 
 
 class CreateAllCategoriesResponse(BaseModel):
@@ -106,11 +128,20 @@ class SubmittedBookWithUsername(SubmittedBook):
 
 class AllowedEmailCreate(BaseModel):
     email: str
+    is_admin_request_for_group_id: int | None = None
+    is_user_request_for_group_id: int | None = None
+
+
+class InvitedEmailCreate(BaseModel):
+    email: str
+    is_invited_request_for_group_id: int | None = None
 
 
 class TrophyCreate(BaseModel):
     kind: TrophyType
     year: int
     number_of_books_read: int
+    group_id: int | None = None
     user_id: int | None = None
+    month: int | None = None
     month: int | None = None

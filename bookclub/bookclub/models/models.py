@@ -17,7 +17,8 @@ class GroupMembership(Base):
 
     user_id: Mapped[int] = mapped_column(ForeignKey("user.id"), primary_key=True)
     group_id: Mapped[int] = mapped_column(ForeignKey("group.id"), primary_key=True)
-    joined_at: Mapped[str] = mapped_column(String)
+    is_default_group: Mapped[bool] = mapped_column(Boolean, default=False)
+    joined_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now(tz=timezone.utc))
 
     user: Mapped["User"] = relationship(back_populates="group_memberships")
     group: Mapped["Group"] = relationship(back_populates="members")
@@ -27,6 +28,7 @@ class Association(Base):
     __tablename__ = "association_table"
 
     user_id: Mapped[int] = mapped_column(ForeignKey("user.id"), primary_key=True)
+    group_id: Mapped[int] = mapped_column(ForeignKey("group.id"), primary_key=True, nullable=True)
     category_id: Mapped[int] = mapped_column(ForeignKey("challenge_category.id"), primary_key=True)
     book_name: Mapped[str] = mapped_column(String)
     isbn: Mapped[str] = mapped_column(String, nullable=True)
@@ -37,6 +39,7 @@ class Association(Base):
     user: Mapped["User"] = relationship(back_populates="challenge_categories")
 
 
+# todo user should not be allowed to join the same challenge twice
 class User(Base):
     __tablename__ = "user"
 
@@ -67,18 +70,38 @@ class Group(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String)
     description: Mapped[str] = mapped_column(String)
+    challenge_id: Mapped[int] = mapped_column(ForeignKey("challenge.id"), nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now(tz=timezone.utc))
+    admin_id: Mapped[int] = mapped_column(ForeignKey("user.id"), nullable=True)
     members: Mapped[List["GroupMembership"]] = relationship(back_populates="group")
+
+
+class Challenge(Base):
+    __tablename__ = "challenge"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    name: Mapped[str] = mapped_column(String)
+    description: Mapped[str] = mapped_column(String)
+    year: Mapped[int] = mapped_column(Integer, nullable=True)
+
+    challenge_categories: Mapped[List["ChallengeCategory"]] = relationship("ChallengeCategory")
+
+    def __repr__(self):
+        return f"{self.name} Challenge"
 
 
 class ChallengeCategory(Base):
     __tablename__ = "challenge_category"
 
     id: Mapped[int] = mapped_column(primary_key=True)
+    challenge_id: Mapped[int] = mapped_column(ForeignKey("challenge.id"), nullable=True, index=True)
     original_number: Mapped[int] = mapped_column(Integer)
-    title: Mapped[str] = mapped_column(String, index=True, unique=True)
+    title: Mapped[str] = mapped_column(String, index=True)
+    # drop this
     year: Mapped[int] = mapped_column(Integer, index=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now(tz=timezone.utc))
     user_id_custom_category: Mapped[int] = mapped_column(ForeignKey("user.id"), nullable=True)
+    group_id_custom_category: Mapped[int] = mapped_column(ForeignKey("group.id"), nullable=True)
     advanced: Mapped[bool] = mapped_column(Boolean, default=False)
 
     users: Mapped[List["Association"]] = relationship(back_populates="challenge_category")
@@ -88,9 +111,12 @@ class AllowedEmailAddress(Base):
     __tablename__ = "allowed_email_address"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    email: Mapped[str] = mapped_column(String, unique=True)
+    email: Mapped[str] = mapped_column(String)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now(tz=timezone.utc))
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
+    is_admin_request_for_group_id: Mapped[int] = mapped_column(ForeignKey("group.id"), nullable=True)
+    is_user_request_for_group_id: Mapped[int] = mapped_column(ForeignKey("group.id"), nullable=True)
+    is_invited_request_for_group_id: Mapped[int] = mapped_column(ForeignKey("group.id"), nullable=True)
 
 
 class Trophy(Base):
@@ -103,4 +129,5 @@ class Trophy(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now(tz=timezone.utc))
     number_of_books_read: Mapped[int] = mapped_column(Integer)
     user_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
+    group_id: Mapped[int] = mapped_column(ForeignKey("group.id"), nullable=True)
     user: Mapped["User"] = relationship("User", back_populates="trophies")

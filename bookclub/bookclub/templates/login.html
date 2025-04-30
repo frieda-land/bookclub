@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Book Club Login</title>
+    <link rel="icon" type="image/png" href="/static/images/bookclub-logo.jpg" />
     <link rel="stylesheet" href="/static/styles.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -25,7 +26,6 @@
         src="/static/images/bookclub-logo.jpg"
         alt="Bookclub Logo"
       />
-      <h2>Login</h2>
       <p class="error-message" style="display: none">
         Invalid login credentials.
       </p>
@@ -36,6 +36,9 @@
       {% elif request.query_params.get('message') == 'invalid_user' %}
       <p class="error-message">Invalid username. Please sign up.</p>
       {% endif %}
+      <p class="group-create-text">
+        Create new group? <a href="/create_group">Create a new group</a>
+      </p>
       <p class="signup-text">
         Not a member? <a href="/signup">Send a request</a>
       </p>

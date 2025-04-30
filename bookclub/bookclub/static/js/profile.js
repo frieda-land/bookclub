@@ -49,7 +49,7 @@ function createUsersCustomCategoriesTable(data) {
 }
 
 function fetchCustomCategories() {
-  const apiUrl = `/profile/custom_category/${localStorage.getItem("userId")}`;
+  const apiUrl = `/profile/custom_category`;
 
   fetch(apiUrl, {
     method: "GET",

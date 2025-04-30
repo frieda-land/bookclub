@@ -1,3 +1,4 @@
+from crud.crud import get_challenge_by_id
 from database import get_db
 from fastapi import APIRouter, Depends
 from requests import Session
@@ -13,23 +14,37 @@ def create_category(category: ChallengeCategoryCreate, db: Session = Depends(get
 
 
 @router.post(
-    "/create_all/{advanced}",
+    "/create_all",
     response_model=CreateAllCategoriesResponse,
 )
-def create_all_categories(db: Session = Depends(get_db), advanced: bool = False):
-    challenge = advanced_challenges if advanced else challenges
+def create_all_categories(
+    challenge_id: int,
+    advanced: bool = False,
+    db: Session = Depends(get_db),
+):
+    challenge_kind = advanced_challenges if advanced else challenges
+    challenge = get_challenge_by_id(db, challenge_id)
+    year = None
+    if challenge:
+        year = challenge.year
+    else:
+        return {
+            "status": f"No challenge with id {challenge_id}. Create a challenge first.",
+            "created_categories": 0,
+            "number_of_categories": 0,
+        }
     created_categories = []
     try:
-        for key, value in challenge.items():
-            for category_id, title in value.items():
-                category = ChallengeCategoryCreate(
-                    original_number=category_id,
-                    title=title,
-                    year=key,
-                    advanced=advanced,
-                )
-                created_category = create_category(category, db)
-                created_categories.append(created_category)
+        for category_id, title in challenge_kind[year].items():
+            category = ChallengeCategoryCreate(
+                original_number=category_id,
+                title=title,
+                year=year,
+                advanced=advanced,
+                challenge_id=challenge_id,
+            )
+            created_category = create_category(category, db)
+            created_categories.append(created_category)
     except Exception as e:
         print(e)
         return {
