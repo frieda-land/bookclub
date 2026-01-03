@@ -2,9 +2,8 @@ document.addEventListener("DOMContentLoaded", function () {
   const challengeContainer = document.getElementById("challenge-container");
 
   const challenges = [
-    { year: 2025, current: true, image: "/static/images/popsugar2025.png" },
-    { year: 2024, current: false, image: "/static/images/popsugar2024.png" },
-    { year: 2023, current: false, image: "/static/images/popsugar2023.png" },
+    { year: 2026, current: true, image: "/static/images/popsugar2026.png" },
+    { year: 2025, current: false, image: "/static/images/popsugar2025.png" },
   ];
 
   challenges.forEach((challenge) => {

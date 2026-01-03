@@ -437,7 +437,10 @@ def fill_monthly_buckets(books: List[models.Association]):
     monthly_buckets = get_last_months(6)
     for book in books:
         month = month_names[book.created_at.month - 1]
-        monthly_buckets[month] += 1
+        try:
+            monthly_buckets[month] += 1
+        except KeyError:
+            continue
     return monthly_buckets
 
 
