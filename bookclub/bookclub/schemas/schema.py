@@ -9,7 +9,7 @@ class ChallengeCategoryBase(BaseModel):
     title: str
     user_id_custom_category: int | None = None
     original_number: int | None = None
-    year: int = 2025
+    year: int = 2026
     advanced: bool = False
 
 

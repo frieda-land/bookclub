@@ -42,7 +42,7 @@ def get_categories(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.ChallengeCategory).offset(skip).limit(limit).all()
 
 
-def get_category_by_number(db: Session, original_number: int, year: int = 2025):
+def get_category_by_number(db: Session, original_number: int, year: int = CURRENT_YEAR):
     return (
         db.query(models.ChallengeCategory)
         .filter(
@@ -53,7 +53,7 @@ def get_category_by_number(db: Session, original_number: int, year: int = 2025):
     )
 
 
-def get_latest_number_for_year(db: Session, year: int = 2025):
+def get_latest_number_for_year(db: Session, year: int = CURRENT_YEAR):
     try:
         largest_category = (
             db.query(models.ChallengeCategory)
@@ -68,7 +68,7 @@ def get_latest_number_for_year(db: Session, year: int = 2025):
         return 0
 
 
-def get_category_by_original_number(db: Session, original_number: int, year: int = 2025):
+def get_category_by_original_number(db: Session, original_number: int, year: int = CURRENT_YEAR):
     return (
         db.query(models.ChallengeCategory)
         .filter(
@@ -79,7 +79,7 @@ def get_category_by_original_number(db: Session, original_number: int, year: int
     )
 
 
-def get_category_by_title(db: Session, title: str, year: int = 2025):
+def get_category_by_title(db: Session, title: str, year: int = CURRENT_YEAR):
     return (
         db.query(models.ChallengeCategory)
         .filter(
@@ -254,7 +254,7 @@ def remove_bookmark_by_id(db: Session, bookmark_id: int):
     db.commit()
 
 
-def get_custom_categories(db: Session, user_id: int, year: int = 2025):
+def get_custom_categories(db: Session, user_id: int, year: int = CURRENT_YEAR):
     return (
         db.query(models.ChallengeCategory)
         .filter(
